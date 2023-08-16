@@ -16,7 +16,7 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - run: flutter pub get
-      - run: flutter build windows --release --target-platform windows-x64
+      - run: flutter build windows --release
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v3
         with:
