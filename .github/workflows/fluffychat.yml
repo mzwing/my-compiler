@@ -17,9 +17,11 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - run: flutter pub get
       - run: flutter build windows --release
+      - run: ls -alh
+      - run: tree
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v3
         with:
           name: windows-artifact
           path: |
-            build/windows/x64/release/bundle/
+            build/windows/runner/Release/
