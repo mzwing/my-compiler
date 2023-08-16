@@ -1,0 +1,25 @@
+name: Build FluffyChat Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: krille-chan/fluffychat
+          ref: v1.13.0
+      - run: cat .github/workflows/versions.env >> $GITHUB_ENV
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+      - run: flutter pub get
+      - run: flutter build windows --release --target-platform windows-x64
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-artifact
+          path: |
+            build/windows/x64/release/bundle/
