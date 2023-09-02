@@ -11,9 +11,11 @@ jobs:
         uses: actions/setup-go@v4
       - name: Build
         run: go install -v -tags with_acme github.com/sagernet/serenity/cmd/serenity@latest
+      - name: debug
+        run: ls $env:USERPROFILE/go/bin/
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v3
         with:
           name: serenity-artifact
           path: |
-            (go env GOPATH)+"/bin/"
+            $env:USERPROFILE/go/bin/serenity.exe
