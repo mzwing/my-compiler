@@ -16,4 +16,4 @@ jobs:
         with:
           name: serenity-artifact
           path: |
-            (go env GOPATH)+"/bin/serenity.exe"
+            (go env GOPATH)+"/bin/"
