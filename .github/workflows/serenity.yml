@@ -11,8 +11,10 @@ jobs:
         uses: actions/setup-go@v4
       - name: Build
         run: go install -v -tags with_acme github.com/sagernet/serenity/cmd/serenity@latest
-      - name: Upload Windows artifacts
+      - name: Export artifactPath
+        run: echo "artifactPath=$(go env GOPATH)\bin\serenity.exe" >> $GITHUB_ENV
+      - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: serenity-artifact
-          path: C:\Users\runneradmin\go\bin\serenity.exe
+          path: ${{ env.artifactPath }}

@@ -1,0 +1,25 @@
+name: Build FullTCore
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: AirportR/FullTCore
+          ref: meta
+      - name: Setup Go Environment
+        uses: actions/setup-go@v4
+      - name: go-mod
+        run: go mod tidy
+      - name: Build
+        run: GOARCH=arm64 GOARM=7 go build -tags with_gvisor -ldflags="-s -w" -o ./output/fulltclash-meta-ubuntu-20.04-arm64 fulltclash.go
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: fulltcore-artifact
+          path: ./output/*
