@@ -5,7 +5,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -17,9 +20,9 @@ jobs:
       - name: go-mod
         run: go mod tidy
       - name: Build
-        run: GOARCH=arm64 GOARM=7 go build -tags with_gvisor -ldflags="-s -w" -o ./output/fulltclash-meta-ubuntu-20.04-arm64 fulltclash.go
+        run: GOARCH=arm64 GOARM=7 go build -tags with_gvisor -ldflags="-s -w" -o ./output/fulltclash-meta-${{ matrix.os }}-arm64 fulltclash.go
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: fulltcore-artifact
+          name: fulltcore-${{ matrix.os }}-artifact
           path: ./output/*

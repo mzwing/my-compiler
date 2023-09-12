@@ -1,0 +1,28 @@
+name: Build nchat
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-20.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: d99kris/nchat
+          ref: v3.60
+      - name: Setup Go Environment
+        uses: actions/setup-go@v4
+      - name: Install Dependencies
+        run: sudo apt-get install ccache cmake build-essential gperf help2man libreadline-dev libssl-dev libncurses-dev libncursesw5-dev ncurses-doc zlib1g-dev libsqlite3-dev libmagic-dev -y
+      - name: Build
+        run: mkdir -p build && cd build && cmake .. && make -s
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nchat-${{ matrix.os }}-artifact
+          path: ./build/*
