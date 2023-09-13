@@ -27,6 +27,7 @@ jobs:
             wget https://dl.google.com/go/go1.21.1.linux-arm64.tar.gz
             sudo tar -xzf go1.21.1.linux-arm64.tar.gz -C /usr/local
             echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+            source /etc/profile
             # Test Go
             go version
             # Build
