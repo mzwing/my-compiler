@@ -21,7 +21,14 @@ jobs:
             # Install Dependencies
             sudo apt-get install software-properties-common -y
             sudo add-apt-repository ppa:longsleep/golang-backports
-            sudo apt-get install ccache cmake build-essential gperf help2man libreadline-dev libssl-dev libncurses-dev libncursesw5-dev ncurses-doc zlib1g-dev libsqlite3-dev libmagic-dev golang-1.21 -y
+            sudo apt-get install ccache cmake build-essential gperf help2man libreadline-dev libssl-dev libncurses-dev libncursesw5-dev ncurses-doc zlib1g-dev libsqlite3-dev libmagic-dev -y
+            # Install Golang binary
+            wget https://dl.google.com/go/go1.21.1.linux-arm64.tar.gz
+            sudo tar -xzf go1.21.1.linux-arm64.tar.gz -C /usr/local
+            echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+            # Test Go
+            go version
+            # Build
             mkdir -p build && cd build && cmake .. && make -s
             mkdir build
             make DESTDIR="./build" install
