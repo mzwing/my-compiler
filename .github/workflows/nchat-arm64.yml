@@ -12,6 +12,12 @@ jobs:
         with:
           repository: d99kris/nchat
           ref: v3.60
+      - name: Add Swapfile
+        run: |
+          dd if=/dev/zero of=/swap/swapfile bs=1M count=3072
+          mkswap /swapfile
+          chmod 600 /swapfile
+          swapon /swapfile
       - name: Build nchat for Linux ARM64
         uses: pguyot/arm-runner-action@v2
         with:
