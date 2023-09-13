@@ -14,7 +14,7 @@ jobs:
           ref: v3.60
       - name: Add Swapfile
         run: |
-          dd if=/dev/zero of=/swap/swapfile bs=1M count=3072
+          dd if=/dev/zero of=/swapfile bs=1M count=3072
           mkswap /swapfile
           chmod 600 /swapfile
           swapon /swapfile
