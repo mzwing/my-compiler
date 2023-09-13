@@ -1,34 +1,9 @@
-name: Build nchat
+name: Build nchat ARM64
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          repository: d99kris/nchat
-          ref: v3.60
-      - name: Setup Go Environment
-        uses: actions/setup-go@v4
-        with:
-          go-version: stable
-          cache: false
-      - name: Install Dependencies
-        run: sudo apt-get install ccache cmake build-essential gperf help2man libreadline-dev libssl-dev libncurses-dev libncursesw5-dev ncurses-doc zlib1g-dev libsqlite3-dev libmagic-dev -y
-      - name: Build
-        run: |
-          mkdir -p build && cd build && cmake .. && make -s
-          mkdir build
-          make DESTDIR="./build" install
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: nchat-x86-artifact
-          path: ./build/build
   build-arm64:
     runs-on: ubuntu-latest
     steps:
