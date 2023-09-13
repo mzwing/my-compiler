@@ -18,6 +18,7 @@ jobs:
           base_image: raspios_lite_arm64:latest
           image_additional_mb: 8192
           bind_mount_repository: true
+          shell: /bin/bash -eo pipefail
           commands: |
             # Install Dependencies
             sudo apt-get install software-properties-common -y
@@ -26,13 +27,14 @@ jobs:
             # Install Golang binary
             wget -q https://dl.google.com/go/go1.21.1.linux-arm64.tar.gz
             sudo tar -xzf go1.21.1.linux-arm64.tar.gz -C /usr/local
-            echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+            echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+            source /etc/profile
             # Test Go
-            echo 'go version' | bash
+            go version
             # Build
-            echo 'mkdir -p build && cd build && cmake .. && make -s' | bash
-            echo 'mkdir build' | bash
-            echo 'make DESTDIR="./build" install' | bash
+            mkdir -p build && cd build && cmake .. && make -s
+            mkdir build
+            make DESTDIR="./build" install
       - run: sudo chmod 777 ./build/build
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
