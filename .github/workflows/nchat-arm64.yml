@@ -14,10 +14,10 @@ jobs:
           ref: v3.60
       - name: Add Swapfile
         run: |
-          dd if=/dev/zero of=/swapfile bs=1M count=3072
-          mkswap /swapfile
-          chmod 600 /swapfile
-          swapon /swapfile
+          sudo dd if=/dev/zero of=/swapfile bs=1M count=3072
+          sudo mkswap /swapfile
+          sudo chmod 600 /swapfile
+          sudo swapon /swapfile
       - name: Build nchat for Linux ARM64
         uses: pguyot/arm-runner-action@v2
         with:
