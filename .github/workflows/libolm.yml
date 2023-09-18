@@ -13,13 +13,12 @@ jobs:
       - name: Build
         run: |
           cd olm
-          ls
           cmake . -Bbuild
           cmake --build build
-          ls
+          ls build
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v3
         with:
           name: windows-artifact
           path: |
-            olm/result
+            olm/build
