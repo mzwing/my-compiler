@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Checkout
         run: |
-          git clone https://gitlab.matrix.org/matrix-org/olm.git --depth=1 -b v3.2.15
+          git clone https://gitlab.matrix.org/matrix-org/olm.git --depth=1 -b 3.2.15
       - name: Build
         run: |
           cd olm
