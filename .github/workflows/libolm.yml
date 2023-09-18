@@ -7,13 +7,12 @@ jobs:
   build_windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: matrix-org/olm
-          ref: v3.2.15
-          github-server-url: https://gitlab.matrix.org
+      - name: Checkout
+        run: |
+          git clone https://gitlab.matrix.org/matrix-org/olm.git --depth=1 -b v3.2.15
       - name: Build
         run: |
+          cd olm
           ls
           cmake . -Bbuild
           cmake --build build
@@ -23,4 +22,4 @@ jobs:
         with:
           name: windows-artifact
           path: |
-            result
+            olm/result
