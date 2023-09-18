@@ -1,0 +1,26 @@
+name: Build FluffyChat Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: matrix-org/olm
+          ref: v3.2.15
+          github-server-url: https://gitlab.matrix.org
+      - name: Build
+        run: |
+          ls
+          cmake . -Bbuild
+          cmake --build build
+          ls
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-artifact
+          path: |
+            result
