@@ -27,18 +27,32 @@ jobs:
           mkdir -p build && cd build && cmake .. && make -s
           mkdir build
           make DESTDIR="./build" install
+      - name: Prepare nchat deb
+        id: prepare_deb
+        uses: jiro4989/build-deb-action@v3
+        with:
+          package: nchat
+          package_root: build/build/
+          maintainer: mzwing
+          version: 3.67
+          arch: amd64
+          depends: 'libc6, libx11, ncurses'
+          desc: 'nchat is a terminal-based chat client for Linux and macOS with support for Telegram and WhatsApp.'
       - name: Prepare Artifact
-        run: tar -zcvf nchat-x86_64-binary.tar.gz build/build/
+        run: |
+          mkdir artifact
+          mv ${{ steps.prepare_deb.outputs.file_name }} artifact/
+          tar -zcvf artifact/nchat-x86_64-binary.tar.gz build/build/**/*
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: nchat-x86_64-binary-artifact
-          path: nchat-x86_64-binary.tar.gz
+          path: artifact/*
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v0.0.1
           name: Nchat Binary
           body: This releases contains the x86_64 binary of Nchat.
-          files: nchat-x86_64-binary.tar.gz
+          files: artifact/*
           fail_on_unmatched_files: true

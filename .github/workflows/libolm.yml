@@ -21,4 +21,4 @@ jobs:
         with:
           name: windows-artifact
           path: |
-            olm/build
+            olm/build/Debug/olm.dll
