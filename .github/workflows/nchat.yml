@@ -6,6 +6,9 @@ on:
 permissions:
   contents: write
 
+env:
+  NCHAT_VERSION: 3.67
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: d99kris/nchat
-          ref: v3.67
+          ref: v${{ env.NCHAT_VERSION }}
       - name: Setup Go Environment
         uses: actions/setup-go@v4
         with:
@@ -27,32 +30,46 @@ jobs:
           mkdir -p build && cd build && cmake .. && make -s
           mkdir build
           make DESTDIR="./build" install
-      - name: Prepare nchat deb
-        id: prepare_deb
+      - name: Pack tar.gz
+        run: |
+          mkdir artifacts
+          tar -zcvf artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz build/build/**/*
+      - name: Build deb
+        id: build_deb
         uses: jiro4989/build-deb-action@v3
         with:
           package: nchat
           package_root: build/build/
-          maintainer: mzwing
-          version: 3.67
+          maintainer: d99kris
+          version: ${{ env.NCHAT_VERSION }}
           arch: amd64
-          depends: 'libc6, libx11, ncurses'
+          depends: 'libx11, ncurses, help2man, readline, openssl, zlib, file, gperf'
           desc: 'nchat is a terminal-based chat client for Linux and macOS with support for Telegram and WhatsApp.'
+      - name: Prepare for Building zst
+        run: |
+          mkdir workspace
+          cd workspace
+          git clone https://github.com/MZWNET/actions.git -b master --depth 1
+          cp -r assets/archlinux/nchat-bin workspace/
+      - name: Build zst for ArchLinux
+        id: build_zst
+        uses: edlanglois/pkgbuild-action@v1
+        with:
+          pkgdir: workspace/nchat-bin
       - name: Prepare Artifact
         run: |
-          mkdir artifact
-          mv ${{ steps.prepare_deb.outputs.file_name }} artifact/
-          tar -zcvf artifact/nchat-x86_64-binary.tar.gz build/build/**/*
-      - name: Upload Artifact
+          mv ${{ steps.build_deb.outputs.file_name }} artifacts/
+          mv workspace/${{ steps.build_zst.outputs.pkgfile0 }} artifacts/
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: nchat-x86_64-binary-artifact
-          path: artifact/*
+          path: artifacts/*
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v0.0.1
           name: Nchat Binary
-          body: This releases contains the x86_64 binary of Nchat.
-          files: artifact/*
+          body: This release contains the x86_64 binary of [nchat](https://github.com/d99kris/nchat).
+          files: artifacts/*
           fail_on_unmatched_files: true
