@@ -52,6 +52,7 @@ jobs:
           cd workspace
           git clone https://github.com/MZWNET/actions.git -b master --depth 1
           cp -r actions/assets/archlinux/nchat-bin .
+          cp ../artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz nchat-bin/
       - name: Build zst for ArchLinux
         id: build_zst
         uses: edlanglois/pkgbuild-action@v1
