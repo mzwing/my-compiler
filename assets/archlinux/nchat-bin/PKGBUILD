@@ -7,7 +7,7 @@ pkgdesc="nchat is a terminal-based chat client for Linux and macOS with support 
 arch=('x86_64')
 url="https://github.com/d99kris/nchat"
 license=('MIT')
-depends=('ncurses' 'gperf' 'help2man' 'readline' 'openssl' 'zlib' 'libx11' 'file')
+depends=('ncurses' 'help2man' 'readline' 'openssl' 'libx11' 'file')
 
 provides=('nchat')
 conflicts=('nchat' 'nchat-git' 'nchat-bin')
@@ -15,5 +15,6 @@ source=("nchat-v$pkgver-x86_64-binary.tar.gz::../../artifacts/nchat-v$pkgver-x86
 md5sums=('SKIP')
 
 package() {
+  ls "$srcdir/$pkgname-$pkgver/"
   cp -r "$srcdir/$pkgname-$pkgver/" $pkgdir/
 }
