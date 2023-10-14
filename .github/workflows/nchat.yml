@@ -44,7 +44,7 @@ jobs:
           maintainer: d99kris
           version: ${{ env.NCHAT_VERSION }}
           arch: amd64
-          depends: 'libx11, file'
+          depends: 'ncurses, libx11, file'
           desc: 'nchat is a terminal-based chat client for Linux and macOS with support for Telegram and WhatsApp.'
       - name: Prepare for Packing zst
         run: |
