@@ -35,8 +35,8 @@ jobs:
           mkdir artifacts
           cd build/build/
           tar -zcvf ../../artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz .
-      - name: Build deb
-        id: build_deb
+      - name: Pack deb
+        id: pack_deb
         uses: jiro4989/build-deb-action@v3
         with:
           package: nchat
@@ -44,24 +44,23 @@ jobs:
           maintainer: d99kris
           version: ${{ env.NCHAT_VERSION }}
           arch: amd64
-          depends: 'libx11, ncurses, help2man, readline, openssl, zlib, file, gperf'
+          depends: 'libx11, file'
           desc: 'nchat is a terminal-based chat client for Linux and macOS with support for Telegram and WhatsApp.'
-      - name: Prepare for Building zst
+      - name: Prepare for Packing zst
         run: |
           mkdir workspace
-          cd workspace
-          git clone https://github.com/MZWNET/actions.git -b master --depth 1
-          cp -r actions/assets/archlinux/nchat-bin .
-          cp ../artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz nchat-bin/
-      - name: Build zst for ArchLinux
-        id: build_zst
+          git clone https://github.com/MZWNET/actions.git workspace/actions -b master --depth 1
+          cp -r workspace/actions/assets/archlinux/ workspace/
+          cp artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz workspace/archlinux/nchat-bin/
+      - name: Pack zst for ArchLinux
+        id: pack_zst
         uses: edlanglois/pkgbuild-action@v1
         with:
           pkgdir: workspace/nchat-bin
       - name: Prepare Artifact
         run: |
-          mv ${{ steps.build_deb.outputs.file_name }} artifacts/
-          mv ${{ steps.build_zst.outputs.pkgfile0 }} artifacts/
+          mv ${{ steps.pack_deb.outputs.file_name }} artifacts/
+          mv ${{ steps.pack_zst.outputs.pkgfile0 }} artifacts/
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -70,7 +69,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v0.0.1
+          tag_name: nchat
           name: Nchat Binary
           body: This release contains the x86_64 binary of [nchat](https://github.com/d99kris/nchat).
           files: artifacts/*

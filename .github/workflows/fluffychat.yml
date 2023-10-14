@@ -3,6 +3,9 @@ name: Build FluffyChat Windows
 on:
   workflow_dispatch:
 
+env:
+  FLUFFYCHAT_VERSION: 1.14.5
+
 jobs:
   build_windows:
     runs-on: windows-latest
@@ -10,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: krille-chan/fluffychat
-          ref: v1.14.5
+          ref: v${{ env.FLUFFYCHAT_VERSION }}
       - name: Export env
         id: env
         run: cat .github/workflows/versions.env >> $GITHUB_OUTPUT
@@ -24,9 +27,21 @@ jobs:
         run: flutter pub get
       - name: Build
         run: flutter build windows --release
-      - name: Upload Windows artifacts
+      - name: Prepare Artifact
+        run: |
+          cd build/windows/runner/Release/
+          7z a ../../../fluffychat-win-v${{ env.FLUFFYCHAT_VERSION }}.7z .
+      - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: windows-artifact
+          name: fluffychat-win-artifact
           path: |
-            build/windows/runner/Release/
+            build/fluffychat-win-v${{ env.FLUFFYCHAT_VERSION }}.7z
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: fluffychat-win
+          name: Serenity Windows Binary
+          body: This release contains the windows x86_64 binary of [serenity](https://github.com/SagerNet/serenity). Note that it is built on latest commit, which may be very unstable.
+          files: build/fluffychat-win-v${{ env.FLUFFYCHAT_VERSION }}.7z
+          fail_on_unmatched_files: true

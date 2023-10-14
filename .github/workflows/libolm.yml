@@ -9,16 +9,14 @@ jobs:
     steps:
       - name: Checkout
         run: |
-          git clone https://gitlab.matrix.org/matrix-org/olm.git --depth=1 -b 3.2.15
+          git clone https://gitlab.matrix.org/matrix-org/olm.git . --depth=1 -b 3.2.15
       - name: Build
         run: |
-          cd olm
           cmake . -Bbuild
           cmake --build build
-          ls build
-      - name: Upload Windows artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: windows-artifact
+          name: libolm-win-artifact
           path: |
-            olm/build/Debug/olm.dll
+            build/

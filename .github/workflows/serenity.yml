@@ -16,9 +16,17 @@ jobs:
         run: go install -ldflags="-s -w" -v -tags with_acme github.com/sagernet/serenity/cmd/serenity@latest
       - name: Export artifactPath
         id: path
-        run: echo "artifactPath=$(go env GOPATH)\bin\serenity.exe" >> $GITHUB_OUTPUT
+        run: echo "artifactPath=$(go env GOPATH)/bin/serenity.exe" >> $GITHUB_OUTPUT
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: serenity-artifact
+          name: serenity-git-win-artifact
           path: ${{ steps.path.outputs.artifactPath }}
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: serenity-git-win
+          name: Serenity Windows Binary
+          body: This release contains the windows x86_64 binary of [serenity](https://github.com/SagerNet/serenity). Note that it is built on latest commit, which may be very unstable.
+          files: ${{ steps.path.outputs.artifactPath }}
+          fail_on_unmatched_files: true
