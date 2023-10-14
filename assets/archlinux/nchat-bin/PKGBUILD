@@ -13,7 +13,8 @@ provides=('nchat')
 conflicts=('nchat' 'nchat-git' 'nchat-bin')
 source=("nchat-v$pkgver-$CARCH-binary.tar.gz::https://github.com/MZWNET/actions/releases/download/nchat/nchat-v$pkgver-$CARCH-binary.tar.gz"
         "LICENSE::https://github.com/d99kris/nchat/raw/master/LICENSE")
-md5sums=('SKIP')
+md5sums=('SKIP'
+        'SKIP')
 
 package() {
   cd "$srcdir"
