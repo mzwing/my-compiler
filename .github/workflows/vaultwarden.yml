@@ -15,6 +15,11 @@ jobs:
           mkdir armv6
           mkdir armv7
           mkdir arm64
+          mkdir dist
+          mkdir dist/x86_64
+          mkdir dist/armv6
+          mkdir dist/armv7
+          mkdir dist/arm64
       - name: Pull & Extract
         run: |
           cd x86_64
@@ -27,19 +32,14 @@ jobs:
           ../docker-image-extract -p linux/arm64 vaultwarden/server:latest
       - name: Clean
         run: |
-          mkdir dist
-          mkdir dist/x86_64
-          mkdir dist/armv6
-          mkdir dist/armv7
-          mkdir dist/arm64
-          cp -r output/x86_64/vaultwarden dist/x86_64
-          cp -r output/armv6/vaultwarden dist/armv6
-          cp -r output/armv7/vaultwarden dist/armv7
-          cp -r output/arm64/vaultwarden dist/arm64
-          cp -r output/x86_64/web-vault dist/x86_64
-          cp -r output/armv6/web-vault dist/armv6
-          cp -r output/armv7/web-vault dist/armv7
-          cp -r output/arm64/web-vault dist/arm64
+          cp -r x86_64/output/vaultwarden dist/x86_64
+          cp -r armv6/output/vaultwarden dist/armv6
+          cp -r armv7/output/vaultwarden dist/armv7
+          cp -r arm64/output/vaultwarden dist/arm64
+          cp -r x86_64/output/web-vault dist/x86_64
+          cp -r armv6/output/web-vault dist/armv6
+          cp -r armv7/output/web-vault dist/armv7
+          cp -r arm64/output/web-vault dist/arm64
       - name: Pack
         run: |
           cd dist/x86_64/
