@@ -15,6 +15,6 @@ source=("nchat-v$pkgver-x86_64-binary.tar.gz::../../artifacts/nchat-v$pkgver-x86
 md5sums=('SKIP')
 
 package() {
-  ls "$srcdir/$pkgname-$pkgver/"
-  cp -r "$srcdir/$pkgname-$pkgver/" $pkgdir/
+  ls "$srcdir"
+  cp -r "$srcdir/usr/" $pkgdir/
 }
