@@ -61,7 +61,7 @@ jobs:
       - name: Prepare Artifact
         run: |
           mv ${{ steps.build_deb.outputs.file_name }} artifacts/
-          mv workspace/${{ steps.build_zst.outputs.pkgfile0 }} artifacts/
+          mv ${{ steps.build_zst.outputs.pkgfile0 }} artifacts/
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
