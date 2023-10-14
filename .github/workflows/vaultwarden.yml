@@ -1,7 +1,10 @@
-name: Build vaultwarden Binary
+name: Extract vaultwarden Binary
 
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
