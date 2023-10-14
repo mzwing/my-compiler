@@ -1,0 +1,58 @@
+name: Build vaultwarden Binary
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        run: |
+          wget https://raw.githubusercontent.com/jjlin/docker-image-extract/main/docker-image-extract
+          chmod +x docker-image-extract
+          mkdir x86_64
+          mkdir armv6
+          mkdir armv7
+          mkdir arm64
+      - name: Pull & Extract
+        run: |
+          cd x86_64
+          ../docker-image-extract vaultwarden/server:latest
+          cd ../armv6
+          ../docker-image-extract -p linux/arm/v6 vaultwarden/server:latest
+          cd ../armv7
+          ../docker-image-extract -p linux/arm/v7 vaultwarden/server:latest
+          cd ../arm64
+          ../docker-image-extract -p linux/arm64 vaultwarden/server:latest
+      - name: Pack
+        run: |
+          cd x86_64/output
+          tar -zcvf ../../vaultwarden-x86_64-binary.tar.gz .
+          cd ../../armv6/output
+          tar -zcvf ../../vaultwarden-armv6-binary.tar.gz .
+          cd ../../armv7/output
+          tar -zcvf ../../vaultwarden-armv7-binary.tar.gz .
+          cd ../../arm64/output
+          tar -zcvf ../../vaultwarden-arm64-binary.tar.gz .
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: vaultwarden-artifact
+          path: |
+            vaultwarden-x86_64-binary.tar.gz
+            vaultwarden-armv6-binary.tar.gz
+            vaultwarden-armv7-binary.tar.gz
+            vaultwarden-arm64-binary.tar.gz
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: vaultwarden-bin
+          name: vaultwarden Binary
+          body: This release contains the officially supported binary of [vaultwarden](https://github.com/dani-garcia/vaultwarden), extracted from official docker image.
+          files: |
+            vaultwarden-x86_64-binary.tar.gz
+            vaultwarden-armv6-binary.tar.gz
+            vaultwarden-armv7-binary.tar.gz
+            vaultwarden-arm64-binary.tar.gz
+          fail_on_unmatched_files: true
