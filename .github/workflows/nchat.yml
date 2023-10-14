@@ -56,7 +56,7 @@ jobs:
         id: pack_zst
         uses: edlanglois/pkgbuild-action@v1
         with:
-          pkgdir: workspace/nchat-bin
+          pkgdir: workspace/archlinux/nchat-bin
       - name: Prepare Artifact
         run: |
           mv ${{ steps.pack_deb.outputs.file_name }} artifacts/
