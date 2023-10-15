@@ -52,7 +52,6 @@ jobs:
           git clone https://github.com/MZWNET/actions.git workspace/actions -b master --depth 1
           cp -r workspace/actions/assets/archlinux/ workspace/
           cp artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz workspace/archlinux/nchat-bin/
-          wget https://github.com/d99kris/nchat/raw/master/LICENSE
           mv LICENSE workspace/archlinux/nchat-bin/
       - name: Pack zst for ArchLinux
         id: pack_zst

@@ -18,10 +18,10 @@ md5sums=('SKIP'
 
 package() {
   cd "$srcdir"
-  install -Dm755 usr/local/bin/nchat -t "$pkgdir/usr/bin"
+  install -Dm755 usr/local/bin/nchat -t "$pkgdir/usr/local/bin"
   install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
-  install -Dm644 usr/local/lib/* -t "$pkgdir/usr/lib"
-  install -Dm644 usr/local/man/man1/nchat.1 -t "$pkgdir/usr/local/man/man1"
+  install -Dm644 usr/local/lib/* -t "$pkgdir/usr/local/lib"
+  install -Dm644 usr/local/man/man1/* -t "$pkgdir/usr/local/man/man1"
   install -Dm644 usr/local/share/nchat/themes/basic-color/* -t "$pkgdir/usr/local/share/$pkgname/themes/basic-color"
   install -Dm644 usr/local/share/nchat/themes/catppuccin-mocha/* -t "$pkgdir/usr/local/share/$pkgname/themes/catppuccin-mocha"
   install -Dm644 usr/local/share/nchat/themes/default/* -t "$pkgdir/usr/local/share/$pkgname/themes/default"
