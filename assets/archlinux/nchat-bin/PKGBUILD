@@ -7,7 +7,7 @@ pkgdesc="nchat is a terminal-based chat client for Linux and macOS with support 
 arch=('x86_64')
 url="https://github.com/d99kris/nchat"
 license=('MIT')
-depends=('ncurses' 'libx11' 'file' 'sqlite' 'openssl' 'glibc' 'zlib' 'libxcb' 'gcc-libs' 'libpng')
+depends=('ncurses' 'file' 'sqlite' 'openssl' 'glibc' 'zlib' 'libxcb' 'gcc-libs' 'libpng')
 
 provides=('nchat')
 conflicts=('nchat' 'nchat-git' 'nchat-bin')
