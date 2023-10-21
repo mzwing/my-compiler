@@ -1,0 +1,38 @@
+name: Build Debian Rootfs for i686
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        run: |
+          sudo apt install debootstrap qemu qemu-user-static binfmt-support
+          mkdir rootfs
+      - name: Build
+        run: |
+          sudo debootstrap --arch i386 --foreign bookworm rootfs
+          cp /usr/bin/qemu-i386-static ./rootfs/usr/bin/
+          chroot rootfs/ debootstrap/debootstrap --second-stage
+      - name: Pack
+        run: |
+          cd rootfs
+          tar -zcvf ../debian-bookworm-i386-rootfs.tar.gz .
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: debian-rootfs-artifact
+          path: debian-bookworm-i386-rootfs.tar.gz
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: debian-rootfs
+          name: Debian Rootfs for i386
+          body: This release contains Debian Bookworm mini rootfs.
+          files: debian-bookworm-i386-rootfs.tar.gz
+          fail_on_unmatched_files: true
