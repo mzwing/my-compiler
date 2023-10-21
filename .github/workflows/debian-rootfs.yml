@@ -22,9 +22,8 @@ jobs:
           sudo chroot rootfs/ debootstrap/debootstrap --second-stage
       - name: Pack
         run: |
-          sudo chmod 777 rootfs
           cd rootfs
-          tar -zcvf ../debian-bookworm-i386-rootfs.tar.gz .
+          sudo tar -zcvf ../debian-bookworm-i386-rootfs.tar.gz .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
