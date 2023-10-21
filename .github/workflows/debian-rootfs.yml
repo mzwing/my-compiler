@@ -17,8 +17,8 @@ jobs:
           mkdir rootfs
       - name: Build
         run: |
-          debootstrap --arch i386 --foreign bookworm rootfs
-          cp /usr/bin/qemu-i386-static ./rootfs/usr/bin/
+          sudo debootstrap --arch i386 --foreign bookworm rootfs
+          sudo cp /usr/bin/qemu-i386-static ./rootfs/usr/bin/
           chroot rootfs/ debootstrap/debootstrap --second-stage
       - name: Pack
         run: |
