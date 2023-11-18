@@ -98,7 +98,7 @@ jobs:
         id: pack_zst
         uses: edlanglois/pkgbuild-action@v1
         with:
-          pkgdir: workspace/archlinux/nchat-bin
+          pkgdir: build/nchat-bin
       - name: Prepare Artifact
         run: |
           mkdir -p dist

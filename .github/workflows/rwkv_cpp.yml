@@ -1,0 +1,55 @@
+name: Build rwkv.cpp with cuBLAS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
+jobs:
+  build_cu121:
+    runs-on: windows-latest
+    steps:
+      - name: Install CUDA 12.1
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.11
+        with:
+          cuda: "12.1.1"
+      - name: Debug
+        run: |
+          $vcdir = $(vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
+          $msvc = $(join-path $vcdir $('VC\Tools\MSVC\'+$(gc -raw $(join-path $vcdir 'VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt')).Trim()))
+
+          ls $vcdir
+          ls $msvc
+          ls ${{steps.install-cuda.outputs.CUDA_PATH}}
+          nvcc -V
+          ls C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Microsoft\VC\v170\BuildCustomizations
+          ls ${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: saharNooby/rwkv.cpp
+      - name: Prepare commit hash
+        id: commit_hash
+        run: |
+          echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      - name: Get commit hash
+        id: short_commit_hash
+        uses: prompt/actions-commit-hash@v3
+        with:
+          commit: ${{ steps.commit_hash.outputs.hash }}
+      - name: Build
+        run: |
+          mkdir build
+          cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
+          cmake --build . --config Release
+      - name: Pack
+        run: 7z a .\build\dist\rwkv-${{ env.BRANCH_NAME }}-${{ steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.zip .\build\bin\Release\
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: build/dist/rwkv-${{ env.BRANCH_NAME }}-${{ steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.zip
