@@ -34,7 +34,7 @@ jobs:
           make DESTDIR="./bin" install
       - name: Pack tar.gz
         run: |
-          cd build/bin/
+          cd nchat/build/bin/
           tar -zcvf ../../nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
