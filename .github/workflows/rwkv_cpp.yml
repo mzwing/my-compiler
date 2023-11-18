@@ -10,6 +10,14 @@ env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
+  build_cu113:
+    runs-on: windows-latest
+    steps:
+      - name: Install CUDA 11.3
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.11
+        with:
+          cuda: "11.3.1"
   build_cu121:
     runs-on: windows-latest
     steps:
@@ -17,7 +25,7 @@ jobs:
         id: install-cuda
         uses: Jimver/cuda-toolkit@v0.2.11
         with:
-          cuda: "12.1.1"
+          cuda: "12.1.0"
       - name: Debug
         run: |
           $vcdir = $(vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
@@ -48,8 +56,28 @@ jobs:
           cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
           cmake --build . --config Release
       - name: Pack
-        run: 7z a .\build\dist\rwkv-${{ env.BRANCH_NAME }}-${{ steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.zip .\build\bin\Release\
+        run: 7z a .\build\dist\rwkv-master-${{ steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.7z .\build\bin\Release\
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: build/dist/rwkv-${{ env.BRANCH_NAME }}-${{ steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.zip
+          path: build/dist/rwkv-master-${{ steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.7z
+  release:
+    runs-on: ubuntu-latest
+    needs: [build_cu121]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: |
+            dist/
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: rwkv_cpp-bin-win
+          name: Binary build for rwkv.cpp
+          body: |
+            This release contains the x86_64 binary (Windows version) of [rwkv.cpp](https://github.com/saherNooby/rwkv.cpp).
+
+            Please note that I only build for AVX2 & cuBLAS & CUDA v11.3 **or** AVX512 & cuBLAS & CUDA v12.1, using VS2022 BuildTools.
+          files: dist/*
+          fail_on_unmatched_files: true
