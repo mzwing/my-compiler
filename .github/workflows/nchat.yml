@@ -34,8 +34,9 @@ jobs:
           make DESTDIR="./bin" install
       - name: Pack tar.gz
         run: |
+          mkdir artifacts
           cd nchat/build/bin/
-          tar -zcvf ../../nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz .
+          tar -zcvf ../../../artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -54,7 +55,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          tar -zxvf artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz
+          tar -zxvf ../artifacts/nchat-v${{ env.NCHAT_VERSION }}-x86_64-binary.tar.gz
       - name: Pack deb
         id: pack_deb
         uses: jiro4989/build-deb-action@v3
