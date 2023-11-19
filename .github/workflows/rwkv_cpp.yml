@@ -7,7 +7,24 @@ permissions:
   contents: write
 
 jobs:
+  get_short_commit_hash:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare commit hash
+        id: commit_hash
+        run: |
+          git clone https://github.com/saharNooby/rwkv.cpp.git cache --depth 1
+          cd cache
+          echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          cd ..
+          rm -Recurse -Force cache
+      - name: Get short commit hash
+        id: short_commit_hash
+        uses: prompt/actions-commit-hash@v3
+        with:
+          commit: ${{ steps.commit_hash.outputs.hash }}
   build_cu113:
+    needs: get_short_commit_hash
     runs-on: windows-latest
     steps:
       - name: Install CUDA 11.3
@@ -16,6 +33,7 @@ jobs:
         with:
           cuda: "11.3.1"
   build_cu121:
+    needs: get_short_commit_hash
     runs-on: windows-latest
     steps:
       - name: Install CUDA 12.1
@@ -23,41 +41,24 @@ jobs:
         uses: Jimver/cuda-toolkit@v0.2.11
         with:
           cuda: "12.1.0"
-      - name: Debug
-        run: |
-          $vcdir = $(vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
-          ls $($vcdir + '\MSBuild\Microsoft\VC\v170\BuildCustomizations')
-          nvcc -V
-          ls "${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration"
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: saharNooby/rwkv.cpp
-      - name: Prepare commit hash
-        id: commit_hash
-        run: |
-          echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Get shortened commit hash
-        id: short_commit_hash
-        uses: prompt/actions-commit-hash@v3
-        with:
-          commit: ${{ steps.commit_hash.outputs.hash }}
-      - name: Write shortened hash to ENV
-        run: echo "SHORT_COMMIT_HASH=${{ steps.short_commit_hash.outputs.short }}" >> $GITHUB_ENV
       - name: Build
         run: |
           mkdir build
           cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
           cmake --build . --config Release
       - name: Pack
-        run: 7z a .\build\dist\rwkv-master-${{ steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.7z .\build\bin\Release\
+        run: 7z a .\build\dist\rwkv-master-${{ job.get_short_commit_hash.steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.7z .\build\bin\Release\
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: build/dist/rwkv-master-${{ steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.7z
+          path: build/dist/rwkv-master-${{ job.get_short_commit_hash.steps.short_commit_hash.outputs.short }}-bin-win-avx512-cublas-cu121-x64.7z
   release:
     runs-on: ubuntu-latest
-    needs: [build_cu121]
+    needs: [build_cu113, build_cu121]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -67,8 +68,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: rwkv_cpp-bin-win-${{ env.SHORT_COMMIT_HASH}}
-          name: Binary build for rwkv.cpp (${{ env.SHORT_COMMIT_HASH}})
+          tag_name: rwkv_cpp-bin-win-${{ job.get_short_commit_hash.steps.short_commit_hash.outputs.short}}
+          name: Binary build for rwkv.cpp (${{ job.get_short_commit_hash.steps.short_commit_hash.outputs.short }})
           body: |
             This release contains the x86_64 binary (Windows version) of [rwkv.cpp](https://github.com/saherNooby/rwkv.cpp).
 
