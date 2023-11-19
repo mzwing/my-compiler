@@ -6,9 +6,6 @@ on:
 permissions:
   contents: write
 
-env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-
 jobs:
   build_cu113:
     runs-on: windows-latest
@@ -29,14 +26,9 @@ jobs:
       - name: Debug
         run: |
           $vcdir = $(vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
-          $msvc = $(join-path $vcdir $('VC\Tools\MSVC\'+$(gc -raw $(join-path $vcdir 'VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt')).Trim()))
-
-          ls $vcdir
-          ls $msvc
-          ls ${{steps.install-cuda.outputs.CUDA_PATH}}
+          ls $($vcdir + '\MSBuild\Microsoft\VC\v170\BuildCustomizations')
           nvcc -V
-          ls C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Microsoft\VC\v170\BuildCustomizations
-          ls ${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration
+          ls "${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration"
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -45,11 +37,13 @@ jobs:
         id: commit_hash
         run: |
           echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Get commit hash
+      - name: Get shortened commit hash
         id: short_commit_hash
         uses: prompt/actions-commit-hash@v3
         with:
           commit: ${{ steps.commit_hash.outputs.hash }}
+      - name: Write shortened hash to ENV
+        run: echo "SHORT_COMMIT_HASH=${{ steps.short_commit_hash.outputs.short }}" >> $GITHUB_ENV
       - name: Build
         run: |
           mkdir build
@@ -73,8 +67,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: rwkv_cpp-bin-win
-          name: Binary build for rwkv.cpp
+          tag_name: rwkv_cpp-bin-win-${{ env.SHORT_COMMIT_HASH}}
+          name: Binary build for rwkv.cpp (${{ env.SHORT_COMMIT_HASH}})
           body: |
             This release contains the x86_64 binary (Windows version) of [rwkv.cpp](https://github.com/saherNooby/rwkv.cpp).
 
