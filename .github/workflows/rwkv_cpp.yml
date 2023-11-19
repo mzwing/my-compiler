@@ -17,7 +17,7 @@ jobs:
           cd cache
           echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           cd ..
-          rm -Recurse -Force cache
+          rm -rf cache
       - name: Get short commit hash
         id: short_commit_hash
         uses: prompt/actions-commit-hash@v3
