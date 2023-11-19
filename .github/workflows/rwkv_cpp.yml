@@ -45,6 +45,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: saharNooby/rwkv.cpp
+          submodules: recursive
       - name: Build
         run: |
           mkdir build
