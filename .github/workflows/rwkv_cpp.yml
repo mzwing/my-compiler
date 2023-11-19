@@ -48,6 +48,7 @@ jobs:
       - name: Build
         run: |
           mkdir build
+          cd build
           cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
           cmake --build . --config Release
       - name: Pack

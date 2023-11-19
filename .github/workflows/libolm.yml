@@ -13,7 +13,7 @@ jobs:
       - name: Build
         run: |
           cmake . -Bbuild
-          cmake --build build
+          cmake --build build --config Release
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
