@@ -3,6 +3,9 @@ name: Build libolm Windows
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   OLM_VERSION: 3.2.15
 
