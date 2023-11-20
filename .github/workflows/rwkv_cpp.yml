@@ -9,6 +9,8 @@ permissions:
 jobs:
   get_short_commit_hash:
     runs-on: ubuntu-latest
+    outputs:
+      hash: ${{ steps.short_commit_hash.outputs.short }}
     steps:
       - name: Prepare commit hash
         id: commit_hash
@@ -23,8 +25,6 @@ jobs:
         uses: prompt/actions-commit-hash@v3
         with:
           commit: ${{ steps.commit_hash.outputs.hash }}
-      - name: Write shortened hash to ENV
-        run: echo "SHORT_COMMIT_HASH=${{ steps.short_commit_hash.outputs.short }}" >> $GITHUB_ENV
   build_cu113:
     needs: get_short_commit_hash
     runs-on: windows-latest
@@ -60,15 +60,15 @@ jobs:
           cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
           cmake --build . --config Release
       - name: Pack
-        run: 7z a .\build\dist\rwkv-master-${{ env.SHORT_COMMIT_HASH }}-bin-win-avx512-cublas-cu121-x64.7z .\build\bin\Release\
+        run: 7z a .\build\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.7z .\build\bin\Release\
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121
-          path: build/dist/rwkv-master-${{ env.SHORT_COMMIT_HASH }}-bin-win-avx512-cublas-cu121-x64.7z
+          path: build/dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.7z
   release:
     runs-on: ubuntu-latest
-    needs: [build_cu113, build_cu121]
+    needs: [get_short_commit_hash, build_cu113, build_cu121]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -85,8 +85,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: rwkv_cpp-bin-win-${{ env.SHORT_COMMIT_HASH}}
-          name: Binary build for rwkv.cpp (${{ env.SHORT_COMMIT_HASH }})
+          tag_name: rwkv_cpp-${{ needs.get_short_commit_hash.outputs.hash }}
+          name: Binary build for rwkv.cpp (${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
             This release contains the x86_64 binary (Windows version) of [rwkv.cpp](https://github.com/saherNooby/rwkv.cpp).
 
