@@ -1,0 +1,54 @@
+build_cu113:
+    needs: get_short_commit_hash
+    runs-on: windows-latest
+    steps:
+      - name: Install CUDA 11.3
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.11
+        with:
+          cuda: "11.3.1"
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: saharNooby/rwkv.cpp
+          submodules: recursive
+      - name: Inject CUDA Compute Capability 3.5
+        run: |
+          $content = Get-Content -Path "CMakeLists.txt" -Raw
+          $newContent = $content -replace 'set\(CMAKE_CUDA_ARCHITECTURES "52;61;70"\)', 'set(CMAKE_CUDA_ARCHITECTURES "35;52;61;70")'
+          $newContent | Set-Content -Path "CMakeLists.txt"
+      - name: Inject code to support CUDA 11.3 in VS2022
+        run: |
+          # Get visual studio install dir
+          $vcdir = $(vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
+          $msvc = $(join-path $vcdir $('VC\Tools\MSVC\'+$(gc -raw $(join-path $vcdir 'VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt')).Trim()))
+
+          # Remove CUDA 11.3 compiler version check
+          $content = Get-Content -Path "${{steps.install-cuda.outputs.CUDA_PATH}}\include\crt\host_config.h" -Raw
+          $newContent = $content -replace '#if _MSC_VER < 1910 \|\| _MSC_VER >= 1930', ''
+          $newContent = $newContent -replace "#error -- unsupported Microsoft Visual Studio version! Only the versions between 2017 and 2019 \(inclusive\) are supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.", ''
+          $newContent = $newContent -replace '#elif _MSC_VER >= 1910 && _MSC_VER < 1910', '#if _MSC_VER >= 1910 && _MSC_VER < 1910'
+          $newContent | Set-Content -Path "${{steps.install-cuda.outputs.CUDA_PATH}}\include\crt\host_config.h"
+
+          # Remove VS2022 CUDA version check
+          $content = Get-Content -Path ($msvc + "\include\yvals_core.h") -Raw
+          $newContent = $content -replace '#if __CUDACC_VER_MAJOR__ < 11 \|\| \(__CUDACC_VER_MAJOR__ == 11 \&\& __CUDACC_VER_MINOR__ < 6\)', '#if __CUDACC_VER_MAJOR__ < 11'
+          $newContent | Set-Content -Path ($msvc + "\include\yvals_core.h")
+
+          # Add CUDA 11.3 Visual Studio Integration to VS2022
+          cp "${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" ($vcdir + "\MSBuild\Microsoft\VC\v170\BuildCustomizations\")
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX2=ON
+          cmake --build . --config Release
+      - name: Pack
+        run: |
+          cd build\bin\Release\
+          7z a .\build\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.7z .
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cu121
+          path: build/dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.7z
