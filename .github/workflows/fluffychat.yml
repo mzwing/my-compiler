@@ -27,21 +27,20 @@ jobs:
         run: flutter pub get
       - name: Build
         run: flutter build windows --release
-      - name: Prepare Artifact
+      - name: Pack
         run: |
           cd build/windows/runner/Release/
           7z a ../../../fluffychat-win-v${{ env.FLUFFYCHAT_VERSION }}.7z .
-      - name: Upload Artifact
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: fluffychat-win-artifact
-          path: |
-            build/fluffychat-win-v${{ env.FLUFFYCHAT_VERSION }}.7z
-      - name: Create Release
+          path: build/fluffychat-win-v${{ env.FLUFFYCHAT_VERSION }}.7z
+      - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: fluffychat-win
-          name: Serenity Windows Binary
-          body: This release contains the windows x86_64 binary of [serenity](https://github.com/SagerNet/serenity). Note that it is built on latest commit, which may be very unstable.
+          tag_name: fluffychat-win-v${{ env.FLUFFYCHAT_VERSION }}
+          name: Fluffychat Windows Binary (v${{ env.FLUFFYCHAT_VERSION }})
+          body: This release contains the windows x86_64 binary of [fluffychat](https://github.com/krille-chan/fluffychat).
           files: build/fluffychat-win-v${{ env.FLUFFYCHAT_VERSION }}.7z
           fail_on_unmatched_files: true

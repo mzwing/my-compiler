@@ -21,7 +21,9 @@ jobs:
           cmake . -Bbuild
           cmake --build build --config Release
       - name: Pack
-        run: 7z a build/libolm-release-v${{ env.OLM_VERSION }}.7z build/Release/
+        run: |
+          cd build/Release/
+          7z a ../libolm-release-v${{ env.OLM_VERSION }}.7z .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:

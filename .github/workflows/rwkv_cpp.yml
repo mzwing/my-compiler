@@ -63,7 +63,7 @@ jobs:
           $newContent | Set-Content -Path ($msvc + "\include\yvals_core.h")
 
           # Add CUDA 11.3 Visual Studio Integration to VS2022
-          cp "${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" ($msvc + "\MSBuild\Microsoft\VC\v170\BuildCustomizations\")
+          cp "${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" ($vcdir + "\MSBuild\Microsoft\VC\v170\BuildCustomizations\")
       - name: Build
         run: |
           mkdir build
@@ -71,7 +71,9 @@ jobs:
           cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX2=ON
           cmake --build . --config Release
       - name: Pack
-        run: 7z a .\build\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.7z .\build\bin\Release\
+        run: |
+          cd build\bin\Release\
+          7z a .\build\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.7z .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -98,7 +100,9 @@ jobs:
           cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
           cmake --build . --config Release
       - name: Pack
-        run: 7z a .\build\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.7z .\build\bin\Release\
+        run: |
+          cd build\bin\Release\
+          7z a ..\..\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.7z .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -116,10 +120,9 @@ jobs:
       - name: Prepare Release
         run: |
           cd dist
-          # mv -f cu113/* .
+          mv -f cu113/* .
           mv -f cu121/* .
-          rm -rf cu121
-          # rm -rf cu113 cu121
+          rm -rf cu113 cu121
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
