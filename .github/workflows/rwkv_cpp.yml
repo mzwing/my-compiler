@@ -58,13 +58,12 @@ jobs:
           $newContent | Set-Content -Path "${{steps.install-cuda.outputs.CUDA_PATH}}\include\crt\host_config.h"
 
           # Remove VS2022 CUDA version check
-          # Debug
-          cp ($msvc + "\include\yvals_core.h") ./yvals_core.h
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: yvals_core
-          path: yvals_core.h
+          $content = Get-Content -Path ($msvc + "\include\yvals_core.h") -Raw
+          $newContent = $content -replace '#if __CUDACC_VER_MAJOR__ < 11 \|\| \(__CUDACC_VER_MAJOR__ == 11 \&\& __CUDACC_VER_MINOR__ < 6\)', '#if __CUDACC_VER_MAJOR__ < 11 || (__CUDACC_VER_MAJOR__ == 11 && __CUDACC_VER_MINOR__ < 3)'
+          $newContent | Set-Content -Path ($msvc + "\include\yvals_core.h")
+
+          # Add CUDA 11.3 Visual Studio Integration to VS2022
+          cp "${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" ($msvc + "\MSBuild\Microsoft\VC\v170\BuildCustomizations\")
       - name: Build
         run: |
           mkdir build
