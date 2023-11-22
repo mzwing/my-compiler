@@ -59,7 +59,7 @@ jobs:
 
           # Remove VS2022 CUDA version check
           $content = Get-Content -Path ($msvc + "\include\yvals_core.h") -Raw
-          $newContent = $content -replace '#if __CUDACC_VER_MAJOR__ < 11 \|\| \(__CUDACC_VER_MAJOR__ == 11 \&\& __CUDACC_VER_MINOR__ < 6\)', '#if __CUDACC_VER_MAJOR__ < 11 || (__CUDACC_VER_MAJOR__ == 11 && __CUDACC_VER_MINOR__ < 3)'
+          $newContent = $content -replace '#if __CUDACC_VER_MAJOR__ < 11 \|\| \(__CUDACC_VER_MAJOR__ == 11 \&\& __CUDACC_VER_MINOR__ < 6\)', '#if __CUDACC_VER_MAJOR__ < 11'
           $newContent | Set-Content -Path ($msvc + "\include\yvals_core.h")
           # Debug
           mv ($msvc + "\include\yvals_core.h") .\
