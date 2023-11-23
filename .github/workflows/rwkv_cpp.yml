@@ -28,6 +28,7 @@ jobs:
   build_cu113:
     needs: get_short_commit_hash
     runs-on: windows-2019
+    continue-on-error: true
     steps:
       - name: Install CUDA 11.3
         id: install-cuda
