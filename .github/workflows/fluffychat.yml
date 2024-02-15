@@ -3,6 +3,9 @@ name: Build FluffyChat Windows
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   FLUFFYCHAT_VERSION: 1.14.5
 

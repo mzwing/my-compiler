@@ -6,27 +6,11 @@ on:
 permissions:
   contents: write
 
+env:
+  NITRO_VERSION: 0.3.9
+
 jobs:
-  get_short_commit_hash:
-    runs-on: ubuntu-latest
-    outputs:
-      hash: ${{ steps.short_commit_hash.outputs.short }}
-    steps:
-      - name: Prepare commit hash
-        id: commit_hash
-        run: |
-          git clone https://github.com/janhq/nitro.git cache --depth 1
-          cd cache
-          echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-          cd ..
-          rm -rf cache
-      - name: Get short commit hash
-        id: short_commit_hash
-        uses: prompt/actions-commit-hash@v3
-        with:
-          commit: ${{ steps.commit_hash.outputs.hash }}
   build_cu121:
-    needs: get_short_commit_hash
     runs-on: windows-latest
     steps:
       - name: Install CUDA 12.1
@@ -43,6 +27,7 @@ jobs:
         with:
           repository: janhq/nitro
           submodules: recursive
+          ref: v${{ env.NITRO_VERSION }}
       - name: Install Deps
         run: |
           cmake -S ./nitro_deps -B ./build_deps/nitro_deps
@@ -52,20 +37,20 @@ jobs:
           mkdir build
           cd build
           cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
-          cmake --build . --config Release
-      # make -j $(%NUMBER_OF_PROCESSORS%)
+          make -j $(%NUMBER_OF_PROCESSORS%)
       - name: Pack
         run: |
-          cd build\bin\Release\
-          7z a ..\..\dist\nitro-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x86_64.7z .
+          cd build/Release
+          cp ..\..\build_deps\_install\bin\zlib.dll .
+          7z a ..\dist\nitro-${{ env.NITRO_VERSION }}-win-amd64-cuda-12-1-avx512.7z .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121
-          path: build/dist/nitro-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x86_64.7z
+          path: build/dist/nitro-${{ env.NITRO_VERSION }}-win-amd64-cuda-12-1-avx512.7z
   release:
     runs-on: ubuntu-latest
-    needs: [get_short_commit_hash, build_cu121]
+    needs: build_cu121
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -80,8 +65,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: nitro-${{ needs.get_short_commit_hash.outputs.hash }}
-          name: Binary build for nitro (${{ needs.get_short_commit_hash.outputs.hash }})
+          tag_name: nitro-v${{ env.NITRO_VERSION }}
+          name: Binary build for nitro (v${{ env.NITRO_VERSION }})
           body: |
             This release contains the x86_64 binary (Windows version) of [nitro](https://github.com/janhq/nitro).
 
