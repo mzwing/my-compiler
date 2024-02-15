@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Install CUDA 12.1
         id: install-cuda
-        uses: Jimver/cuda-toolkit@v0.2.14
+        uses: Jimver/cuda-toolkit@v0.2.11
         with:
           cuda: "12.1.0"
       - name: Checkout
