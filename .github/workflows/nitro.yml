@@ -1,0 +1,86 @@
+name: Build nitro with cuBLAS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  get_short_commit_hash:
+    runs-on: ubuntu-latest
+    outputs:
+      hash: ${{ steps.short_commit_hash.outputs.short }}
+    steps:
+      - name: Prepare commit hash
+        id: commit_hash
+        run: |
+          git clone https://github.com/janhq/nitro.git cache --depth 1
+          cd cache
+          echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          cd ..
+          rm -rf cache
+      - name: Get short commit hash
+        id: short_commit_hash
+        uses: prompt/actions-commit-hash@v3
+        with:
+          commit: ${{ steps.commit_hash.outputs.hash }}
+  build_cu121:
+    needs: get_short_commit_hash
+    runs-on: windows-latest
+    steps:
+      - name: Install CUDA 12.1
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.14
+        with:
+          cuda: "12.1.0"
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: janhq/nitro
+          submodules: recursive
+      - name: Install Deps
+        run: |
+          cmake -S ./nitro_deps -B ./build_deps/nitro_deps
+          cmake --build ./build_deps/nitro_deps --config Release
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
+          cmake --build . --config Release
+      # make -j $(%NUMBER_OF_PROCESSORS%)
+      - name: Pack
+        run: |
+          cd build\bin\Release\
+          7z a ..\..\dist\nitro-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x86_64.7z .
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cu121
+          path: build/dist/nitro-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x86_64.7z
+  release:
+    runs-on: ubuntu-latest
+    needs: [get_short_commit_hash, build_cu121]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: |
+            dist/
+      - name: Prepare Release
+        run: |
+          cd dist
+          mv -f cu121/* .
+          rm -rf cu121
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: nitro-${{ needs.get_short_commit_hash.outputs.hash }}
+          name: Binary build for nitro (${{ needs.get_short_commit_hash.outputs.hash }})
+          body: |
+            This release contains the x86_64 binary (Windows version) of [nitro](https://github.com/janhq/nitro).
+
+            Please note that I only build for AVX512 & cuBLAS & CUDA v12.1, using VS2022 BuildTools.
+          files: dist/*
+          fail_on_unmatched_files: true
