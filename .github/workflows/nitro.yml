@@ -37,7 +37,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
-          make -j $(%NUMBER_OF_PROCESSORS%)
+          make -j $env:NUMBER_OF_PROCESSORS
       - name: Pack
         run: |
           cd build/Release
