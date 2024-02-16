@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 env:
-  NITRO_VERSION: 0.3.9
+  NITRO_VERSION: 0.3.10
 
 jobs:
   build_cu121:
@@ -36,8 +36,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DLLAMA_CUBLAS=ON -DLLAMA_AVX512=ON
-          make -j $env:NUMBER_OF_PROCESSORS
+          cmake .. -DLLAMA_NATIVE=OFF -DLLAMA_BUILD_SERVER=ON -DLLAMA_CUBLAS=ON -DLLAMA_AVX512=ON -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=RELEASE -DWHISPER_SDL2=ON -DWHISPER_CUBLAS=ON -DNITRO_VERSION=${{ env.NITRO_VERSION }}
+          cmake --build . --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: Pack
         run: |
           cd build/Release
