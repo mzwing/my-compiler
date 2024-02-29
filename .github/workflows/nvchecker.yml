@@ -7,11 +7,20 @@ jobs:
   check-versions:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v4
+    - name: Update System
+      run: |
+        sudo apt-get update
+        sudo apt-get upgrade -y
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: "pip"
     - name: Install nvchecker
-      run: pip3 install nvchecker
-    - name: Run nvchecker
+      run: pip install nvchecker
+    - name: Check update
       run: |
         nvchecker -c assets/nvchecker/nvchecker.toml
         ls -alh

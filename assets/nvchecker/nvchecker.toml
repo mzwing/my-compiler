@@ -6,7 +6,7 @@ use_latest_release = true
 [libolm]
 source = "gitlab"
 gitlab = "matrix-org/olm"
-host = "https://gitlab.matrix.org/"
+host = "gitlab.matrix.org/"
 use_max_tag = true
 
 [llama_cpp_for_codeshell]
