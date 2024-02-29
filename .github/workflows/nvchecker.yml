@@ -13,5 +13,5 @@ jobs:
       run: pip3 install nvchecker
     - name: Run nvchecker
       run: |
-        nvchecker --config assets/nvchecker/nvchecker.toml -logger=json
+        nvchecker --config assets/nvchecker/nvchecker.toml --logger=json
         ls -alh
