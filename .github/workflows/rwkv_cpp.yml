@@ -25,40 +25,6 @@ jobs:
         uses: prompt/actions-commit-hash@v3
         with:
           commit: ${{ steps.commit_hash.outputs.hash }}
-  build_cu113:
-    needs: get_short_commit_hash
-    runs-on: windows-2019
-    steps:
-      - name: Install CUDA 11.3
-        id: install-cuda
-        uses: Jimver/cuda-toolkit@v0.2.11
-        with:
-          cuda: "11.3.1"
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: saharNooby/rwkv.cpp
-          submodules: recursive
-      - name: Inject CUDA Compute Capability 3.5
-        run: |
-          $content = Get-Content -Path "CMakeLists.txt" -Raw
-          $newContent = $content -replace 'set\(CMAKE_CUDA_ARCHITECTURES "52;61;70"\)', 'set(CMAKE_CUDA_ARCHITECTURES "35")'
-          $newContent | Set-Content -Path "CMakeLists.txt"
-      - name: Build
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX2=ON
-          cmake --build . --config Release
-      - name: Pack
-        run: |
-          cd build\bin\Release\
-          7z a ..\..\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.7z .
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: cu121
-          path: build/dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.7z
   build_cu121:
     needs: get_short_commit_hash
     runs-on: windows-latest
@@ -90,7 +56,7 @@ jobs:
           path: build/dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.7z
   release:
     runs-on: ubuntu-latest
-    needs: [get_short_commit_hash, build_cu113, build_cu121]
+    needs: [get_short_commit_hash, build_cu121]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -100,9 +66,8 @@ jobs:
       - name: Prepare Release
         run: |
           cd dist
-          mv -f cu113/* .
           mv -f cu121/* .
-          rm -rf cu113 cu121
+          rm -rf cu121
       - name: Release
         uses: softprops/action-gh-release@v1
         with:

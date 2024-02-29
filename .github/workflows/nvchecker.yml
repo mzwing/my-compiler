@@ -1,0 +1,17 @@
+name: Version Check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Install nvchecker
+      run: pip3 install nvchecker
+    - name: Run nvchecker
+      run: |
+        nvchecker --config assets/nvchecker/nvchecker.toml -logger=json
+        ls -alh
