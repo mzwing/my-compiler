@@ -37,13 +37,12 @@ jobs:
       - name: Pack
         run: |
           cd build/bin/
-          ls -alh
-          tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.7z .
+          tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.tar.gz .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: intel-mkl-avx2-linux
-          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.7z
+          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.tar.gz
   build_cu121_avx2_linux:
     runs-on: ubuntu-latest
     steps:
@@ -70,13 +69,12 @@ jobs:
       - name: Pack
         run: |
           cd build/bin/
-          ls -alh
-          tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.7z .
+          tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.tar.gz .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121-avx2-linux
-          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.7z
+          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.tar.gz
   build_cu123_avx512_linux:
     runs-on: ubuntu-latest
     steps:
@@ -103,20 +101,20 @@ jobs:
       - name: Pack
         run: |
           cd build/bin/
-          tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx512-cublas-cu123-x64.7z .
+          tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx512-cublas-cu123-x64.tar.gz .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu123-avx512-linux
-          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx512-cublas-cu123-x64.7z
+          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx512-cublas-cu123-x64.tar.gz
   build_cu123_avx512_windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
       - name: Install CUDA 12.3
         id: install-cuda
         uses: Jimver/cuda-toolkit@v0.2.13
         with:
-          cuda: "12.3.2"
+          cuda: "12.3.1"
       - name: Setup ccache
         uses: Chocobo1/setup-ccache-action@v1
         with:
