@@ -110,7 +110,7 @@ jobs:
           name: cu123-avx512-linux
           path: build/dist/llama-${{ inputs.version }}-bin-linux-avx512-cublas-cu123-x64.7z
   build_cu123_avx512_windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - name: Install CUDA 12.3
         id: install-cuda
