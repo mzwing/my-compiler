@@ -26,6 +26,7 @@ jobs:
         with:
           repository: ggerganov/llama.cpp
           submodules: recursive
+          ref: ${{ inputs.version }}
       - name: Build
         run: |
           mkdir build
@@ -58,6 +59,7 @@ jobs:
         with:
           repository: ggerganov/llama.cpp
           submodules: recursive
+          ref: ${{ inputs.version }}
       - name: Build
         run: |
           mkdir build
@@ -89,6 +91,7 @@ jobs:
         with:
           repository: ggerganov/llama.cpp
           submodules: recursive
+          ref: ${{ inputs.version }}
       - name: Build
         run: |
           mkdir build
@@ -121,6 +124,7 @@ jobs:
         with:
           repository: ggerganov/llama.cpp
           submodules: recursive
+          ref: ${{ inputs.version }}
       - name: Build
         run: |
           mkdir build
