@@ -48,16 +48,11 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release
-          ls -alh
       - name: Pack
         run: |
-          ls -alh
-          ls -alh build
-          ls -alh build/bin/
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/llama-phixtral-bin-linux-avx2-intel-mkl-x64.zip ./*
-          ls -alh build/dist
+          zip ../dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
