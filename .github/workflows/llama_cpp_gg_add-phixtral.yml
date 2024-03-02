@@ -1,4 +1,4 @@
-name: Build llama.cpp
+name: Build llama.cpp (phixtral)
 
 on:
   workflow_dispatch:
@@ -51,7 +51,7 @@ jobs:
       - name: Pack
         run: |
           cd build/bin/
-          tar -zcxf ../dist/llama-phixtral-bin-linux-avx2-intel-mkl-x64.tar.gz .
+          tar -zcf ../dist/llama-phixtral-bin-linux-avx2-intel-mkl-x64.tar.gz ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -84,7 +84,7 @@ jobs:
       - name: Pack
         run: |
           cd build/bin/
-          tar -zcxf ../dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.tar.gz .
+          tar -zcf ../dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.tar.gz .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
