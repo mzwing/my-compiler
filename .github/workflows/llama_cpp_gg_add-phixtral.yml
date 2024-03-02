@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/
-          tar -zcf ../dist/llama-phixtral-bin-linux-avx2-intel-mkl-x64.tar.gz ./*
+          tar -zcf ../dist/llama-phixtral-bin-linux-avx2-intel-mkl-x64.tar.gz .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
