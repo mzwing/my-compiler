@@ -36,6 +36,7 @@ jobs:
           cmake --build . --config Release
       - name: Pack
         run: |
+          mkdir -p build/dist 
           cd build/bin/
           tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.tar.gz .
       - name: Upload Artifacts
@@ -68,6 +69,7 @@ jobs:
           cmake --build . --config Release
       - name: Pack
         run: |
+          mkdir -p build/dist
           cd build/bin/
           tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.tar.gz .
       - name: Upload Artifacts
@@ -100,6 +102,7 @@ jobs:
           cmake --build . --config Release
       - name: Pack
         run: |
+          mkdir -p build/dist
           cd build/bin/
           tar -zcxf ../dist/llama-${{ inputs.version }}-bin-linux-avx512-cublas-cu123-x64.tar.gz .
       - name: Upload Artifacts
