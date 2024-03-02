@@ -34,7 +34,7 @@ jobs:
           wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel -y
+          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -48,16 +48,21 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release
+          ls -alh
       - name: Pack
         run: |
+          ls -alh
+          ls -alh build
+          ls -alh build/bin/
           mkdir -p build/dist
           cd build/bin/
-          tar -zcf ../dist/llama-phixtral-bin-linux-avx2-intel-mkl-x64.tar.gz .
+          zip ../dist/llama-phixtral-bin-linux-avx2-intel-mkl-x64.zip ./*
+          ls -alh build/dist
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: intel-mkl-avx2-linux
-          path: build/dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.tar.gz
+          path: build/dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip
   build_cu121_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
@@ -70,6 +75,8 @@ jobs:
       - name: Install ccache
         run: |
           sudo apt-get install ccache -y
+      - name: Install zip
+        run: sudo apt-get install zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -86,12 +93,12 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/
-          tar -zcf ../dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.tar.gz .
+          zip ../dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121-avx2-linux
-          path: build/dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.tar.gz
+          path: build/dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
   release:
     runs-on: ubuntu-latest
     needs: [get_short_commit_hash, build_intel_mkl_avx2_linux, build_cu121_avx2_linux]
@@ -113,6 +120,6 @@ jobs:
           tag_name: llama_cpp-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}
           name: Binary build for llama.cpp (phixtral version, ${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
-            This release contains the x86_64 binary (Windows version) of [llama.cpp](https://github.com/ggerganov/llama.cpp).
+            This release contains the x86_64 binary (phixtral version) of [llama.cpp](https://github.com/ggerganov/llama.cpp).
           files: dist/*
           fail_on_unmatched_files: true
