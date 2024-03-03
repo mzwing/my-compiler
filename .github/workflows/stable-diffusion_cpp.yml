@@ -1,0 +1,115 @@
+name: Build stable-diffusion.cpp
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  get_short_commit_hash:
+    runs-on: ubuntu-latest
+    outputs:
+      hash: ${{ steps.short_commit_hash.outputs.short }}
+    steps:
+      - name: Prepare commit hash
+        id: commit_hash
+        run: |
+          git clone https://github.com/leejet/stable-diffusion.cpp cache -b gg/add-phixtral --depth 1
+          cd cache
+          echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          cd ..
+          rm -rf cache
+      - name: Get short commit hash
+        id: short_commit_hash
+        uses: prompt/actions-commit-hash@v3
+        with:
+          commit: ${{ steps.commit_hash.outputs.hash }}
+  build_intel_mkl_avx2_linux:
+    needs: get_short_commit_hash
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Deps
+        run: |
+          wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel ninja zip -y
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: leejet/stable-diffusion.cpp
+          submodules: recursive
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          source /opt/intel/oneapi/setvars.sh
+          cmake .. -G "Ninja" -DSD_BLAS=ON -DSD_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DSD_NATIVE=ON -DCMAKE_BUILD_TYPE=Release -DSD_AVX2=ON -DSD_FLASH_ATTN=ON
+          cmake --build . --config Release
+      - name: Pack
+        run: |
+          mkdir -p build/dist
+          cd build/bin/
+          zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip ./*
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: intel-mkl-avx2-linux
+          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip
+  build_cu121_avx2_linux:
+    needs: get_short_commit_hash
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install CUDA 12.1
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.13
+        with:
+          cuda: "12.1.1"
+      - name: Install Deps
+        run: sudo apt-get install ccache zip ninja -y
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: leejet/stable-diffusion.cpp
+          submodules: recursive
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_AVX2=ON
+          cmake --build . --config Release
+      - name: Pack
+        run: |
+          mkdir -p build/dist
+          cd build/bin/
+          zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cu121-avx2-linux
+          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
+  release:
+    runs-on: ubuntu-latest
+    needs: [get_short_commit_hash, build_intel_mkl_avx2_linux, build_cu121_avx2_linux]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: |
+            dist/
+      - name: Prepare Release
+        run: |
+          cd dist
+          mv -f intel-mkl-avx2-linux/* .
+          mv -f cu121-avx2-linux/* .
+          rm -rf intel-mkl-avx2-linux cu121-avx2-linux
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: llama_cpp-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}
+          name: Binary build for llama.cpp (phixtral version, ${{ needs.get_short_commit_hash.outputs.hash }})
+          body: |
+            This release contains the x86_64 binary of [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp).
+          files: dist/*
+          fail_on_unmatched_files: true
