@@ -34,7 +34,7 @@ jobs:
           wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel ninja zip -y
+          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -67,7 +67,7 @@ jobs:
         with:
           cuda: "12.1.1"
       - name: Install Deps
-        run: sudo apt-get install ccache zip ninja -y
+        run: sudo apt-get install ccache zip ninja-build -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
