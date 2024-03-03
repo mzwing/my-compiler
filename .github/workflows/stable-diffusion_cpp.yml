@@ -25,16 +25,14 @@ jobs:
         uses: prompt/actions-commit-hash@v3
         with:
           commit: ${{ steps.commit_hash.outputs.hash }}
-  build_intel_mkl_avx2_linux:
+  build_openblas_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
     steps:
       - name: Install Deps
         run: |
-          wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
-          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel ninja-build zip -y
+          sudo apt-get install ccache ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -44,19 +42,18 @@ jobs:
         run: |
           mkdir build
           cd build
-          source /opt/intel/oneapi/setvars.sh
-          cmake .. -G "Ninja" -DSD_BLAS=ON -DSD_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DSD_NATIVE=ON -DCMAKE_BUILD_TYPE=Release -DSD_AVX2=ON -DSD_FLASH_ATTN=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_OPENBLAS=ON -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON
           cmake --build . --config Release
       - name: Pack
         run: |
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip ./*
+          zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-openblas-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: intel-mkl-avx2-linux
-          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip
+          name: openblas-avx2-linux
+          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-openblas-x64.zip
   build_cu121_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
@@ -77,7 +74,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DGGML_AVX2=ON -DSD_BUILD_SHARED_LIBS=ON
           cmake --build . --config Release
       - name: Pack
         run: |
@@ -89,9 +86,44 @@ jobs:
         with:
           name: cu121-avx2-linux
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
+  build_cu121_avx512_win:
+    needs: get_short_commit_hash
+    runs-on: windows-latest
+    steps:
+      - name: Install CUDA 12.1
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.13
+        with:
+          cuda: "12.1.1"
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          windows_compile_environment: msvc
+      - name: Install Ninja
+        uses: urkle/action-get-ninja@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: leejet/stable-diffusion.cpp
+          submodules: recursive
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DGGML_AVX512=ON -DSD_BUILD_SHARED_LIBS=ON
+          cmake --build . --config Release
+      - name: Pack
+        run: |
+          cd build\bin\
+          7z a ..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu121-x64.zip .
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cu121-avx512-win
+          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip
   release:
     runs-on: ubuntu-latest
-    needs: [get_short_commit_hash, build_intel_mkl_avx2_linux, build_cu121_avx2_linux]
+    needs: [get_short_commit_hash, build_openblas_avx2_linux, build_cu121_avx2_linux, build_cu121_avx512_win]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -101,14 +133,15 @@ jobs:
       - name: Prepare Release
         run: |
           cd dist
-          mv -f intel-mkl-avx2-linux/* .
+          mv -f openblas-avx2-linux/* .
           mv -f cu121-avx2-linux/* .
-          rm -rf intel-mkl-avx2-linux cu121-avx2-linux
+          mv -f cu121-avx512-win/* .
+          rm -rf openblas-avx2-linux cu121-avx2-linux cu121-avx512-win
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: llama_cpp-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}
-          name: Binary build for llama.cpp (phixtral version, ${{ needs.get_short_commit_hash.outputs.hash }})
+          tag_name: sd-master-${{ needs.get_short_commit_hash.outputs.hash }}
+          name: Binary build for stable-diffusion.cpp (${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
             This release contains the x86_64 binary of [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp).
           files: dist/*
