@@ -110,7 +110,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DGGML_AVX512=ON -DSD_BUILD_SHARED_LIBS=ON
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DGGML_AVX512=ON
           cmake --build . --config Release
       - name: Pack
         run: |
