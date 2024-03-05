@@ -32,6 +32,9 @@ jobs:
       - name: Downgrade glibc version
         run: |
           sudo dpkg -l | grep gcc
+          sudo apt-get remove --purge gcc-13 -y
+          sudo apt-get autoremove -y
+          sudo dpkg -l | grep gcc
           # debug
           strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
       - name: Install Deps
