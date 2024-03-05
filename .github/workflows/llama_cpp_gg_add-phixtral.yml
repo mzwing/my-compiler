@@ -32,7 +32,7 @@ jobs:
       - name: Downgrade glibc version
         run: |
           sudo dpkg -l | grep gcc
-          sudo apt-get remove --purge gcc-13 -y
+          sudo apt-get remove --purge gcc-13 gcc-13-base -y
           sudo apt-get autoremove -y
           sudo dpkg -l | grep gcc
           # debug
