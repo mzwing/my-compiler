@@ -28,13 +28,10 @@ jobs:
   build_intel_mkl_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2020_x86_64
     steps:
-      - name: Downgrade glibc version
+      - name: debug
         run: |
-          sudo dpkg -l | grep gcc
-          sudo apt-get remove --purge gcc-13 gcc-13-base -y
-          sudo apt-get autoremove -y
-          sudo dpkg -l | grep gcc
           # debug
           strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
       - name: Install Deps
