@@ -29,11 +29,12 @@ jobs:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
     steps:
-      - name: Downgrade glibc version
+      - name: Debug
         run: |
-          sudo apt-get install libc-dev-bin=2.35-0ubuntu3.6 libc-bin=2.35-0ubuntu3.4
           # debug
           strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
+          sudo dpkg -l | grep libc-
+          ldd --version
       - name: Install Deps
         run: |
           wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
