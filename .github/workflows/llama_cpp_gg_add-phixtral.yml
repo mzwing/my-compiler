@@ -31,10 +31,7 @@ jobs:
     steps:
       - name: Downgrade glibc version
         run: |
-          wget https://github.com/droidian/glibc-downgrade/raw/droidian/glibc-downgrade
-          chmod +x glibc-downgrade
-          ./glibc-downgrade 3.4.30 /lib/x86_64-linux-gnu/libstdc++.so.6
-          rm -rf glibc-downgrade
+          sudo apt-get install libc-dev-bin=2.35-0ubuntu3.6 libc-bin=2.35-0ubuntu3.4
           # debug
           strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
       - name: Install Deps
