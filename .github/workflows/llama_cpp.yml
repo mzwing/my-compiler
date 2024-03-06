@@ -53,7 +53,7 @@ jobs:
         with:
           cuda: "12.1.1"
       - name: Install Deps
-        run: sudo apt-get install ccache ningja-build zip -y
+        run: sudo apt-get install ccache ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
