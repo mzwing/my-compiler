@@ -34,7 +34,7 @@ jobs:
           wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel -y
+          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -45,18 +45,18 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
-          cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release
       - name: Pack
         run: |
           mkdir -p build/dist
           cd build/bin/
-          tar -zcf ../dist/llama_cpp_for_codeshell-bin-linux-avx2-intel-mkl-x64.tar.gz ./*
+          zip ../dist/llama_cpp_for_codeshell-bin-linux-avx2-intel-mkl-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: intel-mkl-avx2-linux
-          path: build/dist/llama_cpp_for_codeshell-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.tar.gz
+          path: build/dist/llama_cpp_for_codeshell-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip
   build_cu121_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
@@ -66,9 +66,9 @@ jobs:
         uses: Jimver/cuda-toolkit@v0.2.13
         with:
           cuda: "12.1.1"
-      - name: Install ccache
+      - name: Install Deps
         run: |
-          sudo apt-get install ccache -y
+          sudo apt-get install ccache ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -78,18 +78,18 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DLLAMA_CUBLAS=ON -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_CUBLAS=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release
       - name: Pack
         run: |
           mkdir -p build/dist
           cd build/bin/
-          tar -zcf ../dist/llama_cpp_for_codeshell-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.tar.gz .
+          zip ../dist/llama_cpp_for_codeshell-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121-avx2-linux
-          path: build/dist/llama_cpp_for_codeshell-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.tar.gz
+          path: build/dist/llama_cpp_for_codeshell-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
   release:
     runs-on: ubuntu-latest
     needs: [get_short_commit_hash, build_intel_mkl_avx2_linux, build_cu121_avx2_linux]

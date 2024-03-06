@@ -29,16 +29,12 @@ jobs:
     needs: get_short_commit_hash
     runs-on: ubuntu-20.04
     steps:
-      - name: debug
-        run: |
-          # debug
-          strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
       - name: Install Deps
         run: |
           wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel zip -y
+          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -50,7 +46,7 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
-          cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release
       - name: Pack
         run: |
@@ -71,11 +67,9 @@ jobs:
         uses: Jimver/cuda-toolkit@v0.2.13
         with:
           cuda: "12.1.1"
-      - name: Install ccache
+      - name: Install Deps
         run: |
-          sudo apt-get install ccache -y
-      - name: Install zip
-        run: sudo apt-get install zip -y
+          sudo apt-get install ccache ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -86,7 +80,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DLLAMA_CUBLAS=ON -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_CUBLAS=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release
       - name: Pack
         run: |
