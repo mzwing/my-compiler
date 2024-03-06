@@ -45,39 +45,6 @@ jobs:
         with:
           name: intel-mkl-avx2-linux
           path: build/dist/nitro-${{ inputs.version }}-linux-amd64-intel-mkl-avx2.zip
-  build_cu123_avx512_linux:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install CUDA 12.3
-        id: install-cuda
-        uses: Jimver/cuda-toolkit@v0.2.13
-        with:
-          cuda: "12.3.2"
-      - name: Install Deps
-        run: sudo apt-get install ccache ningja-build zip -y
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: janhq/nitro
-          submodules: recursive
-          ref: v${{ inputs.version }}
-      - name: Install Deps (nitro)
-        run: ./install_deps.sh
-      - name: Build
-        run: |
-          mkdir build
-          cd build
-          cmake .. -G "Ninja" -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=RELEASE -DLLAMA_BUILD_SERVER=ON -DLLAMA_NATIVE=OFF -DLLAMA_CUBLAS=ON -DLLAMA_AVX512=ON -DWHISPER_SDL2=ON -DWHISPER_CUBLAS=ON -DWHISPER_AVX512=ON -DNITRO_VERSION=${{ inputs.version }}
-          cmake --build . --config Release -j $(nproc)
-      - name: Pack
-        run: |
-          mkdir -p build/dist
-          zip build/dist/nitro-${{ inputs.version }}-linux-amd64-cuda-12-3-avx512.zip build/nitro
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: cu123-avx512-linux
-          path: build/dist/nitro-${{ inputs.version }}-linux-amd64-cuda-12-3-avx512.zip
   build_cu121_avx512_win:
     runs-on: windows-latest
     steps:
@@ -131,9 +98,8 @@ jobs:
         run: |
           cd dist
           mv -f intel-mkl-avx2-linux/* .
-          mv -f cu123-avx512-linux/* .
           mv -f cu121-avx512-win/* .
-          rm -rf intel-mkl-avx2-linux cu123-avx512-linux cu121-avx512-win
+          rm -rf intel-mkl-avx2-linux cu121-avx512-win
       - name: Release
         uses: softprops/action-gh-release@v1
         with:

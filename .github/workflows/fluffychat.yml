@@ -26,7 +26,8 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ steps.env.outputs.FLUTTER_VERSION }}
-      - name: Install Dependencies
+          cache: true
+      - name: Install Package Dependencies
         run: flutter pub get
       - name: Build
         run: flutter build windows --release
