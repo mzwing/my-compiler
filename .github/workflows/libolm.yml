@@ -2,12 +2,14 @@ name: Build libolm Windows
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version"
+        required: true
+        type: string
 
 permissions:
   contents: write
-
-env:
-  OLM_VERSION: 3.2.15
 
 jobs:
   build_windows:
@@ -15,7 +17,7 @@ jobs:
     steps:
       - name: Checkout
         run: |
-          git clone https://gitlab.matrix.org/matrix-org/olm.git . --depth=1 -b ${{ env.OLM_VERSION }}
+          git clone https://gitlab.matrix.org/matrix-org/olm.git . --depth=1 -b ${{ inputs.version }}
       - name: Build
         run: |
           cmake . -Bbuild
@@ -23,19 +25,19 @@ jobs:
       - name: Pack
         run: |
           cd build/Release/
-          7z a ../libolm-release-v${{ env.OLM_VERSION }}.7z .
+          7z a ../libolm-release-v${{ inputs.version }}.7z .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: libolm-win-artifact
           path: |
-            build/libolm-release-v${{ env.OLM_VERSION }}.7z
+            build/libolm-release-v${{ inputs.version }}.7z
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: libolm-v${{ env.OLM_VERSION }}
-          name: libolm dll build (v${{ env.OLM_VERSION }})
+          tag_name: libolm-v${{ inputs.version }}
+          name: libolm dll build (v${{ inputs.version }})
           body: |
             This release contains the x86_64 dll of [libolm](https://gitlab.matrix.org/matrix-org/olm).
-          files: build/libolm-release-v${{ env.OLM_VERSION }}.7z
+          files: build/libolm-release-v${{ inputs.version }}.7z
           fail_on_unmatched_files: true

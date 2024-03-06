@@ -1,4 +1,4 @@
-name: Build nitro with cuBLAS
+name: Build nitro
 
 on:
   workflow_dispatch:

@@ -26,8 +26,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ steps.env.outputs.FLUTTER_VERSION }}
-      - name: Enable Google's Firebase Cloud Messaging
-        run: git apply ./scripts/enable-android-google-services.patch
       - name: Install Dependencies
         run: flutter pub get
       - name: Build
