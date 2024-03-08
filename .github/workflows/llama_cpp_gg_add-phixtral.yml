@@ -27,7 +27,7 @@ jobs:
           commit: ${{ steps.commit_hash.outputs.hash }}
   build_intel_mkl_avx2_linux:
     needs: get_short_commit_hash
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Install Deps
         run: |
@@ -46,7 +46,7 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS=-static -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release
       - name: Pack
         run: |
