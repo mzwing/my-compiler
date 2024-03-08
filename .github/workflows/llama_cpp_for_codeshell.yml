@@ -27,7 +27,7 @@ jobs:
           commit: ${{ steps.commit_hash.outputs.hash }}
   build_intel_mkl_avx2_linux:
     needs: get_short_commit_hash
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Install Deps
         run: |
