@@ -106,6 +106,14 @@ jobs:
         with:
           repository: leejet/stable-diffusion.cpp
           submodules: recursive
+      - name: Fix cl.exe not in PATH
+        run: |
+          $vcdir = $(vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
+          $msvc = $(join-path $vcdir $('VC\Tools\MSVC\'+$(gc -raw $(join-path $vcdir 'VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt')).Trim()))
+          $clDir =  $(join-path $msvc 'bin\Hostx64\x64')
+          $path = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+          $newpath = $Env:clDir + ';' + $path
+          [Environment]::SetEnvironmentVariable('Path', $newpath, 'Machine')
       - name: Build
         run: |
           mkdir build
