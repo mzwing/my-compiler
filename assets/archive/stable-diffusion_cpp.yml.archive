@@ -1,0 +1,42 @@
+build_cu121_avx512_win:
+    needs: get_short_commit_hash
+    runs-on: windows-latest
+    steps:
+      - name: Install CUDA 12.1
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.13
+        with:
+          cuda: "12.1.1"
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          windows_compile_environment: msvc
+      - name: Install Ninja
+        uses: urkle/action-get-ninja@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: leejet/stable-diffusion.cpp
+          submodules: recursive
+      - name: Build
+        run: |
+          $vcdir = $(vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
+          $msvc = $(join-path $vcdir $('VC\Tools\MSVC\'+$(gc -raw $(join-path $vcdir 'VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt')).Trim()))
+          $clDir =  $(join-path $msvc 'bin\Hostx64\x64')
+          $path = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+          $newpath = $Env:clDir + ';' + $path
+          [Environment]::SetEnvironmentVariable('Path', $newpath, 'Machine')
+          echo $Env:Path
+          mkdir build
+          cd build
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DGGML_AVX512=ON
+          cmake --build . --config Release
+      - name: Pack
+        run: |
+          cd build\bin\
+          7z a ..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip .
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cu121-avx512-win
+          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip
