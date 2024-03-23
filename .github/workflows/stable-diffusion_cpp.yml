@@ -180,7 +180,7 @@ jobs:
           mv -f openblas-avx2-linux/* .
           mv -f cu121-avx2-linux/* .
           mv -f cu121-avx512-win/* .
-          mv -f openblas-avx2-win/*
+          mv -f openblas-avx2-win/* .
           rm -rf openblas-avx2-linux cu121-avx2-linux cu121-avx512-win openblas-avx2-win
       - name: Release
         uses: softprops/action-gh-release@v1
