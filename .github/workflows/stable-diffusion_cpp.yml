@@ -123,6 +123,46 @@ jobs:
         with:
           name: cu121-avx512-win
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip
+  build_openblas_avx2_win:
+    needs: get_short_commit_hash
+    runs-on: windows-latest
+    steps:
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          windows_compile_environment: msvc
+      - name: Install Ninja
+        uses: urkle/action-get-ninja@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: leejet/stable-diffusion.cpp
+          submodules: recursive
+      - name: Install OpenBLAS
+        run: |
+          curl -L -o OpenBLAS-0.3.26-x64.zip https://github.com/OpenMathLib/OpenBLAS/releases/download/v0.3.26/OpenBLAS-0.3.26-x64.zip
+          curl -L -o w64devkit-fortran-1.21.0.zip https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-fortran-1.21.0.zip
+          7z x OpenBLAS-0.3.26-x64.zip -oOpenBLAS
+          7z x w64devkit-fortran-1.21.0.zip
+          mv OpenBLAS\lib\libopenblas.a w64devkit\x86_64-w64-mingw32\lib\
+          mv OpenBLAS\bin\libopenblas.dll .
+          rm -Recurse -Force OpenBLAS w64devkit-fortran-1.21.0.zip OpenBLAS-0.3.26-x64.zip
+      - name: Build
+        run: |
+          mkdir build
+          echo 'cd build && cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_OPENBLAS=ON -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON && cmake --build . --config Release' | .\w64devkit\w64devkit.exe
+      - name: Clean
+        run: |
+          rm -Recurse -Force w64devkit
+      - name: Pack
+        run: |
+          cd build\bin\
+          7z a ..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-openblas-x64.zip .
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: openblas-avx2-win
+          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-openblas-x64.zip
   release:
     runs-on: ubuntu-latest
     needs: [get_short_commit_hash, build_openblas_avx2_linux, build_cu121_avx2_linux, build_cu121_avx512_win]
@@ -138,7 +178,8 @@ jobs:
           mv -f openblas-avx2-linux/* .
           mv -f cu121-avx2-linux/* .
           mv -f cu121-avx512-win/* .
-          rm -rf openblas-avx2-linux cu121-avx2-linux cu121-avx512-win
+          mv -f openblas-avx2-win/*
+          rm -rf openblas-avx2-linux cu121-avx2-linux cu121-avx512-win openblas-avx2-win
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
