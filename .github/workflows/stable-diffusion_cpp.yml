@@ -152,7 +152,7 @@ jobs:
       - name: Build
         run: |
           mkdir build
-          echo 'cd build && cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_OPENBLAS=ON -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON && cmake --build . --config Release' | .\w64devkit\w64devkit.exe
+          echo 'cd $GITHUB_WORKSPACE && cd build && cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_OPENBLAS=ON -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON && cmake --build . --config Release' | .\w64devkit\w64devkit.exe
       - name: Clean
         run: |
           rm -Recurse -Force w64devkit
