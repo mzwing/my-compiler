@@ -25,14 +25,14 @@ jobs:
         uses: prompt/actions-commit-hash@v3
         with:
           commit: ${{ steps.commit_hash.outputs.hash }}
-  build_openblas_avx2_linux:
+  build_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
     steps:
       - name: Install Deps
         run: |
           sudo apt-get update
-          sudo apt-get install ccache ninja-build libopenblas-dev zip -y
+          sudo apt-get install ccache ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -42,18 +42,18 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_OPENBLAS=ON -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON
           cmake --build . --config Release
       - name: Pack
         run: |
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-openblas-x64.zip ./*
+          zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: openblas-avx2-linux
-          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-openblas-x64.zip
+          name: avx2-linux
+          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-x64.zip
   build_cu121_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
@@ -160,7 +160,7 @@ jobs:
         with:
           name: cu113-avx2-win
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip
-  build_openblas_avx2_win:
+  build_clblast_avx2_win:
     needs: get_short_commit_hash
     runs-on: windows-latest
     steps:
@@ -175,35 +175,34 @@ jobs:
         with:
           repository: leejet/stable-diffusion.cpp
           submodules: recursive
-      - name: Install OpenBLAS & w64devkit
+      - name: Install CLBlast
         run: |
-          curl -L -o OpenBLAS-0.3.26-x64.zip https://github.com/OpenMathLib/OpenBLAS/releases/download/v0.3.26/OpenBLAS-0.3.26-x64.zip
-          curl -L -o w64devkit-fortran-1.21.0.zip https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-fortran-1.21.0.zip
-          7z x OpenBLAS-0.3.26-x64.zip -oOpenBLAS
-          7z x w64devkit-fortran-1.21.0.zip
-          mv OpenBLAS\lib\libopenblas.a w64devkit\x86_64-w64-mingw32\lib\
-          rm -Recurse -Force OpenBLAS
-          rm -Force w64devkit-fortran-1.21.0.zip
-          rm -Force OpenBLAS-0.3.26-x64.zip
+          curl -L -o CLBlast-1.6.2-windows-x64.zip https://github.com/CNugteren/CLBlast/releases/download/1.6.2/CLBlast-1.6.2-windows-x64.zip
+          7z x OpenBLAS-0.3.26-x64.zip
+          7z x OpenBLAS-0.3.26-x64.7z -oCLBlast
+          rm -Force CLBlast-1.6.2-windows-x64.zip
+          rm -Force CLBlast-1.6.2-windows-x64.7z
       - name: Build
         run: |
           mkdir build
-          echo 'cd $GITHUB_WORKSPACE && cd build && cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_OPENBLAS=ON -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON && cmake --build . --config Release' | .\w64devkit\w64devkit.exe
+          cd build
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_CLBLAST=ON -DCMAKE_PREFIX_PATH="./CLBlast/" -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON
+          cmake --build . --config Release
       - name: Clean
         run: |
           rm -Recurse -Force w64devkit
       - name: Pack
         run: |
           cd build\bin\
-          7z a ..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-openblas-x64.zip .
+          7z a ..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-clblast-x64.zip .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: openblas-avx2-win
-          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-openblas-x64.zip
+          name: clblast-avx2-win
+          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-clblast-x64.zip
   release:
     runs-on: ubuntu-latest
-    needs: [get_short_commit_hash, build_openblas_avx2_linux, build_cu121_avx2_linux, build_cu121_avx512_win, build_cu113_avx2_win, build_openblas_avx2_win]
+    needs: [get_short_commit_hash, build_avx2_linux, build_cu121_avx2_linux, build_cu121_avx512_win, build_cu113_avx2_win, build_clblast_avx2_win]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -213,12 +212,12 @@ jobs:
       - name: Prepare Release
         run: |
           cd dist
-          mv -f openblas-avx2-linux/* .
+          mv -f avx2-linux/* .
           mv -f cu121-avx2-linux/* .
           mv -f cu121-avx512-win/* .
           mv -f cu113-avx2-win/* .
-          mv -f openblas-avx2-win/* .
-          rm -rf openblas-avx2-linux cu121-avx2-linux cu121-avx512-win cu113-avx2-win openblas-avx2-win
+          mv -f clblast-avx2-win/* .
+          rm -rf avx2-linux cu121-avx2-linux cu121-avx512-win cu113-avx2-win clblast-avx2-win
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
