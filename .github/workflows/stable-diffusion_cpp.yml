@@ -190,7 +190,7 @@ jobs:
           cmake --build . --config Release
       - name: Clean
         run: |
-          rm -Recurse -Force w64devkit
+          rm -Recurse -Force CLBlast
       - name: Pack
         run: |
           cd build\bin\
