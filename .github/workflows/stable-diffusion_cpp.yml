@@ -127,8 +127,6 @@ jobs:
     needs: get_short_commit_hash
     runs-on: windows-latest
     steps:
-      - name: Setup VS Dev Environment
-        uses: seanmiddleditch/gha-setup-vsdevenv@v4
       - name: Install CUDA 11.3
         id: install-cuda
         uses: Jimver/cuda-toolkit@v0.2.13
@@ -153,7 +151,6 @@ jobs:
       - name: Build
         run: |
           mkdir build
-          cd build
           echo 'cd $GITHUB_WORKSPACE && cd build && cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_FAST_SOFTMAX=ON -DGGML_AVX2=ON -DGGML_CUDA_ARCHITECTURES=35 -DSD_BUILD_SHARED_LIBS=ON && cmake --build . --config Release' | .\w64devkit\w64devkit.exe
       - name: Clean
         run: |
