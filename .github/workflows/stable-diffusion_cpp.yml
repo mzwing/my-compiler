@@ -178,8 +178,8 @@ jobs:
       - name: Install CLBlast
         run: |
           curl -L -o CLBlast-1.6.2-windows-x64.zip https://github.com/CNugteren/CLBlast/releases/download/1.6.2/CLBlast-1.6.2-windows-x64.zip
-          7z x OpenBLAS-0.3.26-x64.zip
-          7z x OpenBLAS-0.3.26-x64.7z -oCLBlast
+          7z x CLBlast-1.6.2-windows-x64.zip
+          7z x CLBlast-1.6.2-windows-x64.7z -oCLBlast
           rm -Force CLBlast-1.6.2-windows-x64.zip
           rm -Force CLBlast-1.6.2-windows-x64.7z
       - name: Build
