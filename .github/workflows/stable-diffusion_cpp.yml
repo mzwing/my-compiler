@@ -140,36 +140,24 @@ jobs:
           windows_compile_environment: msvc
       - name: Install Ninja
         uses: urkle/action-get-ninja@v1
-      - name: Inject code to support CUDA 11.3 in VS2022
-        run: |
-          # Get visual studio install dir
-          $vcdir = $(vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
-          $msvc = $(join-path $vcdir $('VC\Tools\MSVC\'+$(gc -raw $(join-path $vcdir 'VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt')).Trim()))
-          # Remove CUDA 11.3 compiler version check
-          $content = Get-Content -Path "${{steps.install-cuda.outputs.CUDA_PATH}}\include\crt\host_config.h" -Raw
-          $newContent = $content -replace '#if _MSC_VER < 1910 \|\| _MSC_VER >= 1930', ''
-          $newContent = $newContent -replace "#error -- unsupported Microsoft Visual Studio version! Only the versions between 2017 and 2019 \(inclusive\) are supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.", ''
-          $newContent = $newContent -replace '#elif _MSC_VER >= 1910 && _MSC_VER < 1910', '#if _MSC_VER >= 1910 && _MSC_VER < 1910'
-          $newContent | Set-Content -Path "${{steps.install-cuda.outputs.CUDA_PATH}}\include\crt\host_config.h"
-          # Remove VS2022 CUDA version check
-          $content = Get-Content -Path ($msvc + "\include\yvals_core.h") -Raw
-          $newContent = $content -replace '#if __CUDACC_VER_MAJOR__ < 11 \|\| \(__CUDACC_VER_MAJOR__ == 11 \&\& __CUDACC_VER_MINOR__ < 6\)', '#if __CUDACC_VER_MAJOR__ < 11'
-          $newContent | Set-Content -Path ($msvc + "\include\yvals_core.h")
-          # Debug
-          mv ($msvc + "\include\yvals_core.h") .\
-          # Add CUDA 11.3 Visual Studio Integration to VS2022
-          cp "${{steps.install-cuda.outputs.CUDA_PATH}}\extras\visual_studio_integration\MSBuildExtensions\*" ($vcdir + "\MSBuild\Microsoft\VC\v170\BuildCustomizations\")
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: leejet/stable-diffusion.cpp
           submodules: recursive
+      - name: Install w64devkit
+        run: |
+          curl -L -o w64devkit-fortran-1.21.0.zip https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-fortran-1.21.0.zip
+          7z x w64devkit-fortran-1.21.0.zip
+          rm -Force w64devkit-fortran-1.21.0.zip
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_FAST_SOFTMAX=ON -DGGML_AVX2=ON -DGGML_CUDA_ARCHITECTURES=35 -DSD_BUILD_SHARED_LIBS=ON
-          cmake --build . --config Release
+          echo 'cd $GITHUB_WORKSPACE && cd build && cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_FAST_SOFTMAX=ON -DGGML_AVX2=ON -DGGML_CUDA_ARCHITECTURES=35 -DSD_BUILD_SHARED_LIBS=ON && cmake --build . --config Release' | .\w64devkit\w64devkit.exe
+      - name: Clean
+        run: |
+          rm -Recurse -Force w64devkit
       - name: Pack
         run: |
           cd build\bin\
@@ -194,7 +182,7 @@ jobs:
         with:
           repository: leejet/stable-diffusion.cpp
           submodules: recursive
-      - name: Install OpenBLAS
+      - name: Install OpenBLAS & w64devkit
         run: |
           curl -L -o OpenBLAS-0.3.26-x64.zip https://github.com/OpenMathLib/OpenBLAS/releases/download/v0.3.26/OpenBLAS-0.3.26-x64.zip
           curl -L -o w64devkit-fortran-1.21.0.zip https://github.com/skeeto/w64devkit/releases/download/v1.21.0/w64devkit-fortran-1.21.0.zip
