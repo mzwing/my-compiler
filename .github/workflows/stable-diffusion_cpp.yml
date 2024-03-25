@@ -168,8 +168,6 @@ jobs:
         uses: Chocobo1/setup-ccache-action@v1
         with:
           windows_compile_environment: msvc
-      - name: Install Ninja
-        uses: urkle/action-get-ninja@v1
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -189,7 +187,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_CLBLAST=ON -DCLBlast_DIR=="$env:GITHUB_WORKSPACE/CLBlast/" -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DGGML_CLBLAST=ON -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE/CLBlast/lib/cmake/CLBlast/" -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON
           cmake --build . --config Release
       - name: Clean
         run: |
