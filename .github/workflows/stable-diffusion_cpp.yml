@@ -176,18 +176,19 @@ jobs:
       - name: Setup OpenCL & CLBlast
         run: |
           # curl -L -o OpenCL-SDK-v2023.12.14-Win-x64.zip https://github.com/KhronosGroup/OpenCL-SDK/releases/download/v2023.12.14/OpenCL-SDK-v2023.12.14-Win-x64.zip
-          curl -L -o CLBlast-1.6.2-windows-x64.zip https://github.com/CNugteren/CLBlast/releases/download/1.6.2/CLBlast-1.6.2-windows-x64.zip
+          ## curl -L -o CLBlast-1.6.2-windows-x64.zip https://github.com/CNugteren/CLBlast/releases/download/1.6.2/CLBlast-1.6.2-windows-x64.zip
           # 7z x OpenCL-SDK-v2023.12.14-Win-x64.zip
-          7z x CLBlast-1.6.2-windows-x64.zip
-          7z x CLBlast-1.6.2-windows-x64.7z -oCLBlast
+          ## 7z x CLBlast-1.6.2-windows-x64.zip
+          ## 7z x CLBlast-1.6.2-windows-x64.7z -oCLBlast
           # OpenCL-SDK-v2023.12.14-Win-x64
-          rm -Force CLBlast-1.6.2-windows-x64.zip
-          rm -Force CLBlast-1.6.2-windows-x64.7z
+          ## rm -Force CLBlast-1.6.2-windows-x64.zip
+          ## rm -Force CLBlast-1.6.2-windows-x64.7z
+          vcpkg install opencl clblast
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DGGML_CLBLAST=ON -DCMAKE_PREFIX_PATH=$env:GITHUB_WORKSPACE+"/CLBlast/lib/cmake/CLBlast/" -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DGGML_CLBLAST=ON  -DGGML_AVX2=ON -DSD_FLASH_ATTN=ON -DSD_BUILD_SHARED_LIBS=ON
           cmake --build . --config Release
       - name: Clean
         run: |
