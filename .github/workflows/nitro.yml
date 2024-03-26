@@ -57,8 +57,8 @@ jobs:
         uses: Chocobo1/setup-ccache-action@v1
         with:
           windows_compile_environment: msvc
-      - name: Setup ninja
-        uses: seanmiddleditch/gha-setup-ninja@v4
+      - name: Install Ninja
+        uses: urkle/action-get-ninja@v1
       - name: Checkout
         uses: actions/checkout@v4
         with:
