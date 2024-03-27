@@ -93,7 +93,6 @@ jobs:
         with:
           cuda: "12.1.1"
           method: network
-          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "thrust"]'
       - name: Install Deps
         run: sudo apt-get install ccache zip ninja-build -y
       - name: Checkout
