@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     container: ubuntu:bionic
     steps:
+      - name: Free space
+        uses: rokibhasansagar/slimhub_actions@main
       - name: List free spaces
         run: |
             df -ha
