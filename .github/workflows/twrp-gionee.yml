@@ -1,0 +1,16 @@
+name: Build TWRP (Gionee F103s)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ubuntu:bionic
+    steps:
+      - name: List free spaces
+        run: |
+            df -ha
