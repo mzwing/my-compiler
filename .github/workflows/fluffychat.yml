@@ -33,7 +33,7 @@ jobs:
         run: flutter build windows --release
       - name: Pack
         run: |
-          cd build/windows/runner/Release/
+          cd build/
           7z a ../../../fluffychat-win-${{ inputs.version }}.7z .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
