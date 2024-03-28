@@ -35,7 +35,7 @@ jobs:
         run: |
           cd build/
           7z a ../fluffychat-win-${{ inputs.version }}.7z .
-          mv ../fluffychat-win-${{ inputs.version }}.7z build/
+          mv ../fluffychat-win-${{ inputs.version }}.7z .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
