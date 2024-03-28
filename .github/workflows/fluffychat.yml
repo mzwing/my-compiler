@@ -43,7 +43,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: fluffychat-win-v${{ inputs.version }}
+          tag_name: fluffychat-win-${{ inputs.version }}
           name: Fluffychat Windows Binary (${{ inputs.version }})
           body: This release contains the windows x86_64 binary of [fluffychat](https://github.com/krille-chan/fluffychat).
           files: build/fluffychat-win-${{ inputs.version }}.7z
