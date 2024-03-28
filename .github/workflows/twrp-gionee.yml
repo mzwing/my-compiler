@@ -9,10 +9,14 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: ubuntu:bionic
     steps:
       - name: Free space
         uses: rokibhasansagar/slimhub_actions@main
+        with:
+          retain: docker_buildkit
       - name: List free spaces
         run: |
             df -ha
+      - name: Test docker
+        run: |
+          docker run -ti --rm ubuntu:bionic /bin/bash -c 'df -ha && cat /etc/os-release'
