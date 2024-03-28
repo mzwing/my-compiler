@@ -30,7 +30,7 @@ jobs:
       - name: Install Package Dependencies
         run: flutter pub get
       - name: Build
-        run: flutter build windows --release
+        run: flutter build windows --release --target-platform windows-x64
       - name: Pack
         run: |
           cd build/windows/runner/Release/
