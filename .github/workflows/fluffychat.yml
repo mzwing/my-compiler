@@ -43,7 +43,7 @@ jobs:
         run: flutter build windows --release
       - name: Add Olm DLL
         run: |
-          curl -o libolm-release-v${{ inputs.libolm-version }}.zip https://github.com/MZWNET/actions/releases/download/libolm-v${{ inputs.libolm-version }}/libolm-release-v${{ inputs.libolm-version }}.zip
+          curl -L -o libolm-release-v${{ inputs.libolm-version }}.zip https://github.com/MZWNET/actions/releases/download/libolm-v${{ inputs.libolm-version }}/libolm-release-v${{ inputs.libolm-version }}.zip
           7z x libolm-release-v${{ inputs.libolm-version }}.zip build/windows/x64/runner/Release/
           rm -Force libolm-release-v${{ inputs.libolm-version }}.zip
       - name: Pack
