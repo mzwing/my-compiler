@@ -44,8 +44,7 @@ jobs:
       - name: Add Olm DLL
         run: |
           curl -o libolm-release-v${{ inputs.libolm-version }}.zip https://github.com/MZWNET/actions/releases/download/libolm-v${{ inputs.libolm-version }}/libolm-release-${{ inputs.libolm-version }}.zip
-          7z x libolm-release-v${{ inputs.libolm-version }}.zip .
-          mv olm.dll build/windows/x64/runner/Release/
+          7z x libolm-release-v${{ inputs.libolm-version }}.zip build/windows/x64/runner/Release/
           rm -Force libolm-release-v${{ inputs.libolm-version }}.zip
       - name: Pack
         run: |
@@ -55,12 +54,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: win-artifact
-          path: build/fluffychat-win-${{ inputs.version }}.7z
+          path: build/fluffychat-win-${{ inputs.version }}.zip
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: fluffychat-${{ inputs.version }}
           name: Fluffychat Windows Binary (${{ inputs.version }})
           body: This release contains the windows x86_64 binary of [fluffychat](https://github.com/krille-chan/fluffychat).
-          files: build/fluffychat-win-${{ inputs.version }}.7z
+          files: build/fluffychat-win-${{ inputs.version }}.zip
           fail_on_unmatched_files: true
