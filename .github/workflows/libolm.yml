@@ -31,9 +31,8 @@ jobs:
           cmake --build build --config Release
       - name: Pack
         run: |
-          cd build/
-          7z a ../libolm-release-v${{ inputs.version }}.zip .
-          mv ../libolm-release-v${{ inputs.version }}.zip .
+          cd build/Release
+          7z a ../libolm-release-v${{ inputs.version }}.zip ./olm.dll
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -47,5 +46,5 @@ jobs:
           name: libolm dll build (v${{ inputs.version }})
           body: |
             This release contains the x86_64 dll of [libolm](https://gitlab.matrix.org/matrix-org/olm).
-          files: build/libolm-release-v${{ inputs.version }}.7z
+          files: build/libolm-release-v${{ inputs.version }}.zip
           fail_on_unmatched_files: true
