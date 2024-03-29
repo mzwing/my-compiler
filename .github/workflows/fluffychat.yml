@@ -7,6 +7,10 @@ on:
         description: "Release version"
         required: true
         type: string
+      libolm-version:
+        description: "libolm version"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -15,6 +19,12 @@ jobs:
   build_windows:
     runs-on: windows-latest
     steps:
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          windows_compile_environment: msvc
+      - name: Install Ninja
+        uses: urkle/action-get-ninja@v1
       - uses: actions/checkout@v4
         with:
           repository: krille-chan/fluffychat
@@ -31,20 +41,25 @@ jobs:
         run: flutter pub get
       - name: Build
         run: flutter build windows --release
+      - name: Add Olm DLL
+        run: |
+          curl -o libolm-release-v${{ inputs.libolm-version }}.zip https://github.com/MZWNET/actions/releases/download/libolm-v${{ inputs.libolm-version }}/libolm-release-${{ inputs.libolm-version }}.zip
+          7z x libolm-release-v${{ inputs.libolm-version }}.zip .
+          mv olm.dll build/windows/x64/runner/Release/
+          rm -Force libolm-release-v${{ inputs.libolm-version }}.zip
       - name: Pack
         run: |
-          cd build/
-          7z a ../fluffychat-win-${{ inputs.version }}.7z .
-          mv ../fluffychat-win-${{ inputs.version }}.7z .
+          cd build/windows/x64/runner/Release/
+          7z a ../../../../fluffychat-win-${{ inputs.version }}.zip .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: fluffychat-win-artifact
+          name: win-artifact
           path: build/fluffychat-win-${{ inputs.version }}.7z
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: fluffychat-win-${{ inputs.version }}
+          tag_name: fluffychat-${{ inputs.version }}
           name: Fluffychat Windows Binary (${{ inputs.version }})
           body: This release contains the windows x86_64 binary of [fluffychat](https://github.com/krille-chan/fluffychat).
           files: build/fluffychat-win-${{ inputs.version }}.7z
