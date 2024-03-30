@@ -25,6 +25,9 @@ jobs:
           sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
           sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
           rm -f $PROTOC_ZIP
+      - name: Prepare Conda Environment
+        run: |
+          conda create -n text-generation-inference python=3.12 -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -33,7 +36,6 @@ jobs:
           ref: ${{ inputs.version }}
       - name: Build
         run: |
-          conda create -n text-generation-inference python=3.12
           conda activate text-generation-inference
           python -V
           BUILD_EXTENSIONS=True make install
