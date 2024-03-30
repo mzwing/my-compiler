@@ -37,7 +37,7 @@ jobs:
           ref: ${{ inputs.version }}
       - name: Build
         run: |
-          conda activate text-generation-inference
-          python -V
-          BUILD_EXTENSIONS=True make install
-          ls -alh
+          echo 'conda activate text-generation-inference && \
+          python -V && \
+          BUILD_EXTENSIONS=True make install && \
+          ls -alh' | bash
