@@ -28,6 +28,7 @@ jobs:
       - name: Prepare Conda Environment
         run: |
           conda create -n text-generation-inference python=3.12 -y
+          sudo conda init --system --all
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -36,7 +37,6 @@ jobs:
           ref: ${{ inputs.version }}
       - name: Build
         run: |
-          sudo conda init --system --all
           conda activate text-generation-inference
           python -V
           BUILD_EXTENSIONS=True make install
