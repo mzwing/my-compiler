@@ -1,0 +1,40 @@
+name: Build text-generation-inference
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Deps
+        run: |
+          sudo apt-get install libssl-dev gcc -y
+      - name: Install Protoc
+        run: |
+          PROTOC_ZIP=protoc-21.12-linux-x86_64.zip
+          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v21.12/$PROTOC_ZIP
+          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+          rm -f $PROTOC_ZIP
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: huggingface/text-generation-inference
+          submodules: recursive
+          ref: ${{ inputs.version }}
+      - name: Build
+        run: |
+          conda create -n text-generation-inference python=3.12
+          conda activate text-generation-inference
+          python -V
+          BUILD_EXTENSIONS=True make install
+          ls -alh
