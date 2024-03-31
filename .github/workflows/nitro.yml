@@ -33,6 +33,7 @@ jobs:
         run: |
           mkdir build
           cd build
+          
           source /opt/intel/oneapi/setvars.sh
           cmake .. -G "Ninja" -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_BUILD_SERVER=ON -DLLAMA_NATIVE=OFF -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DLLAMA_AVX2=ON -DWHISPER_SYCL=ON -DWHISPER_SYCL_F16=ON -DWHISPER_AVX2=ON -DNITRO_VERSION=${{ inputs.version }}
           cmake --build . --config Release -j $(nproc)
@@ -48,11 +49,15 @@ jobs:
   build_cu121_avx512_win:
     runs-on: windows-latest
     steps:
+      - name: Setup VS Dev Environment
+        uses: seanmiddleditch/gha-setup-vsdevenv@v4
       - name: Install CUDA 12.1
         id: install-cuda
         uses: Jimver/cuda-toolkit@v0.2.13
         with:
           cuda: "12.1.1"
+          method: network
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "thrust", "visual_studio_integration"]'
       - name: Setup ccache
         uses: Chocobo1/setup-ccache-action@v1
         with:
