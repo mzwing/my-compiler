@@ -30,18 +30,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Python Deps
+        run: |
+          which pip
+          python -m pip list
+          pip install setuptools wheel -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: huggingface/text-generation-inference
           submodules: recursive
           ref: ${{ inputs.version }}
-      - name: Debug
-        run: |
-          which python
-          python -V
-          echo ${{ steps.install_python.outputs.python-path }}
       - name: Build
         run: |
-          BUILD_EXTENSIONS=True make install -j $(nproc)
-          ls -alh' | bash
+          BUILD_EXTENSIONS=True make -j $(nproc)
+          ls -alh

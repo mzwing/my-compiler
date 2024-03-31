@@ -81,9 +81,9 @@ jobs:
           cmake --build . --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: Pack
         run: |
-          cd build\Release
-          cp ..\..\build_deps\_install\bin\zlib.dll .
-          7z a ..\dist\nitro-${{ inputs.version }}-win-amd64-cuda-12-1-avx512.zip .
+          cd build\bin\Release
+          cp ..\..\..\build_deps\_install\bin\zlib.dll .
+          7z a ..\..\dist\nitro-${{ inputs.version }}-win-amd64-cuda-12-1-avx512.zip .
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
