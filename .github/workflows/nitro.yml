@@ -33,7 +33,6 @@ jobs:
         run: |
           mkdir build
           cd build
-          
           source /opt/intel/oneapi/setvars.sh
           cmake .. -G "Ninja" -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_BUILD_SERVER=ON -DLLAMA_NATIVE=OFF -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DLLAMA_AVX2=ON -DWHISPER_SYCL=ON -DWHISPER_SYCL_F16=ON -DWHISPER_AVX2=ON -DNITRO_VERSION=${{ inputs.version }}
           cmake --build . --config Release -j $(nproc)

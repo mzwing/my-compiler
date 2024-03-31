@@ -47,7 +47,7 @@ jobs:
           cd build
           source /opt/intel/oneapi/setvars.sh
           cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
-          cmake --build . --config Release
+          cmake --build . --config Release -j $(nproc)
       - name: Pack
         run: |
           mkdir -p build/dist
@@ -81,7 +81,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_CUBLAS=ON -DLLAMA_AVX2=ON
-          cmake --build . --config Release
+          cmake --build . --config Release -j $(nproc)
       - name: Pack
         run: |
           mkdir -p build/dist

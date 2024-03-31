@@ -25,19 +25,23 @@ jobs:
           sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
           sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
           rm -f $PROTOC_ZIP
-      - name: Prepare Conda Environment
-        run: |
-          conda create -n text-generation-inference python=3.12 -y
-          sudo conda init --system --all
+      - name: Install Python 3.12
+        id: install_python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: huggingface/text-generation-inference
           submodules: recursive
           ref: ${{ inputs.version }}
+      - name: Debug
+        run: |
+          which python
+          python -V
+          echo ${{ steps.install_python.outputs.python-path }}
       - name: Build
         run: |
-          echo 'conda activate text-generation-inference && \
-          python -V && \
-          BUILD_EXTENSIONS=True make install && \
+          BUILD_EXTENSIONS=True make install -j $(nproc)
           ls -alh' | bash

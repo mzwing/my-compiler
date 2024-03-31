@@ -43,7 +43,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DGGML_OPENBLAS=ON -DGGML_AVX2=ON -DSD_BUILD_SHARED_LIBS=ON
-          cmake --build . --config Release
+          cmake --build . --config Release -j $(nproc)
       - name: Pack
         run: |
           mkdir -p build/dist
@@ -76,7 +76,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_FAST_SOFTMAX=ON -DGGML_AVX2=ON -DSD_BUILD_SHARED_LIBS=ON
-          cmake --build . --config Release
+          cmake --build . --config Release -j $(nproc)
       - name: Pack
         run: |
           mkdir -p build/dist
@@ -116,7 +116,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_FAST_SOFTMAX=ON -DGGML_AVX512=ON -DSD_BUILD_SHARED_LIBS=ON
-          cmake --build . --config Release
+          cmake --build . --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: Pack
         run: |
           cd build\bin\
@@ -155,7 +155,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_FAST_SOFTMAX=ON -DGGML_AVX2=ON -DGGML_CUDA_ARCHITECTURES=35 -DSD_BUILD_SHARED_LIBS=ON
-          cmake --build . --config Release
+          cmake --build . --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: Pack
         run: |
           cd build\bin\
@@ -188,7 +188,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DGGML_CLBLAST=ON -DCMAKE_PREFIX_PATH="C:/vcpkg/installed/x64-windows/lib;C:/vcpkg/installed/x64-windows/include" -DGGML_AVX2=ON -DSD_BUILD_SHARED_LIBS=ON
-          cmake --build . --config Release
+          cmake --build . --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: Pack
         run: |
           cd build\bin\Release
