@@ -28,11 +28,11 @@ jobs:
         with:
           cuda: "12.1.1"
           method: network
-      - name: Install Python 3.12
+      - name: Install Python 3.11
         id: install_python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
       - name: Install Python Deps
         run: |
           pip install setuptools wheel
