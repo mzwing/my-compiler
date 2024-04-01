@@ -32,7 +32,7 @@ jobs:
           python-version: '3.12'
       - name: Install Python Deps
         run: |
-          pip install setuptools wheel
+          pip install setuptools==67.6.1 wheel
       - name: Checkout
         uses: actions/checkout@v4
         with:
