@@ -23,6 +23,7 @@ jobs:
           docker cp text-generation-inference:/usr/local/bin/text-generation-benchmark .
           docker cp text-generation-inference:/usr/local/bin/text-generation-router .
           docker cp text-generation-inference:/usr/local/bin/text-generation-launcher .
+          docker stop text-generation-inference
           docker rm text-generation-inference
       - name: Pack
         run: |
