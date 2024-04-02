@@ -17,13 +17,17 @@ jobs:
     steps:
       - name: Pull & Extract
         run: |
+          mkdir -p build/bin
+          cd build/bin
           docker run -d --name=text-generation-inference ghcr.io/huggingface/text-generation-inference:${{ inputs.version }}
-          docker cp text-generation-inference:/text-generation-inference .
+          docker cp text-generation-inference:/usr/local/bin/text-generation-benchmark .
+          docker cp text-generation-inference:/usr/local/bin/text-generation-router .
+          docker cp text-generation-inference:/usr/local/bin/text-generation-launcher .
           docker rm text-generation-inference
       - name: Pack
         run: |
           mkdir -p build/dist
-          zip build/dist/text-generation-inference-v${{ inputs.version }}.zip text-generation-inference
+          zip build/dist/text-generation-inference-v${{ inputs.version }}.zip build/bin/*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
