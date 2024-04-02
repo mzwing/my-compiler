@@ -21,6 +21,7 @@ jobs:
           cd build/bin
           docker run -d --name=text-generation-inference ghcr.io/huggingface/text-generation-inference:${{ inputs.version }}
           docker cp text-generation-inference:/usr/local/bin/text-generation-benchmark .
+          docker cp text-generation-inference:/usr/local/bin/text-generation-server .
           docker cp text-generation-inference:/usr/local/bin/text-generation-router .
           docker cp text-generation-inference:/usr/local/bin/text-generation-launcher .
           docker stop text-generation-inference
@@ -28,7 +29,8 @@ jobs:
       - name: Pack
         run: |
           mkdir -p build/dist
-          zip build/dist/text-generation-inference-v${{ inputs.version }}.zip build/bin/*
+          cd build/bin/
+          zip ../dist/text-generation-inference-v${{ inputs.version }}.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
