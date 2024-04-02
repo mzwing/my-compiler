@@ -15,18 +15,11 @@ jobs:
   build_linux:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Docker Extract
-        run: |
-          wget https://raw.githubusercontent.com/jjlin/docker-image-extract/main/docker-image-extract
-          chmod +x docker-image-extract
       - name: Pull & Extract
         run: |
-          mkdir -p tmp
-          cd tmp
-          ../docker-image-extract ghcr.io/huggingface/text-generation-inference:${{ inputs.version }}
-          cp text-generation-inference ../
-          cd ..
-          rm -rf tmp
+          docker run -d --name=text-generation-inference ghcr.io/huggingface/text-generation-inference:${{ inputs.version }}
+          docker cp text-generation-inference:/text-generation-inference .
+          docker rm text-generation-inference
       - name: Pack
         run: |
           mkdir -p build/dist
