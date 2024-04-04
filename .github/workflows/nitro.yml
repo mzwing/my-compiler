@@ -83,8 +83,7 @@ jobs:
         run: |
           cd build\
           cp ..\build_deps\_install\bin\zlib.dll .
-          7z a ..\dist\nitro-${{ inputs.version }}-win-amd64-cuda-12-1-avx512.zip .
-          mv ..\dist .
+          7z a dist\nitro-${{ inputs.version }}-win-amd64-cuda-12-1-avx512.zip nitro.exe zlib.dll
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
