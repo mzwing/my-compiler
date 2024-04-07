@@ -69,6 +69,7 @@ jobs:
           repository: ggerganov/llama.cpp
           submodules: recursive
           ref: gg/add-phixtral
+          path: llama.cpp
       - name: Install Deps (nitro)
         run: ./install_deps.sh
       - name: Build
@@ -197,6 +198,7 @@ jobs:
           repository: ggerganov/llama.cpp
           submodules: recursive
           ref: gg/add-phixtral
+          path: llama.cpp
       - name: Install Deps (nitro)
         run: |
           cmake -S ./nitro_deps -B ./build_deps/nitro_deps
@@ -218,7 +220,7 @@ jobs:
           name: cu121-avx512-win-phixtral
           path: build/dist/nitro-${{ inputs.version }}-phixtral-win-amd64-cuda-12-1-avx512.zip
   build_cu113_avx2_win:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - name: Setup VS Dev Environment
         uses: seanmiddleditch/gha-setup-vsdevenv@v4
@@ -262,7 +264,7 @@ jobs:
           name: cu113-avx2-win
           path: build/dist/nitro-${{ inputs.version }}-win-amd64-cuda-11-3-avx2.zip
   build_cu113_avx2_win_phixtral:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - name: Setup VS Dev Environment
         uses: seanmiddleditch/gha-setup-vsdevenv@v4
@@ -294,6 +296,7 @@ jobs:
           repository: ggerganov/llama.cpp
           submodules: recursive
           ref: gg/add-phixtral
+          path: llama.cpp
       - name: Install Deps (nitro)
         run: |
           cmake -S ./nitro_deps -B ./build_deps/nitro_deps
