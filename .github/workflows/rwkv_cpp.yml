@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build
-          zip ../rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-clblast-x64.zip librwkv.so
+          zip dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-clblast-x64.zip librwkv.so
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
