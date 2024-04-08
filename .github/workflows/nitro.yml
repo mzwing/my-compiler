@@ -39,7 +39,8 @@ jobs:
       - name: Pack
         run: |
           mkdir -p build/dist
-          zip build/dist/nitro-${{ inputs.version }}-linux-amd64-intel-mkl-avx2.zip build/nitro
+          cd build
+          zip dist/nitro-${{ inputs.version }}-linux-amd64-intel-mkl-avx2.zip nitro
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -72,7 +73,8 @@ jobs:
       - name: Pack
         run: |
           mkdir -p build/dist
-          zip build/dist/nitro-${{ inputs.version }}-linux-amd64-sycl-avx2.zip build/nitro
+          cd build
+          zip dist/nitro-${{ inputs.version }}-linux-amd64-sycl-avx2.zip nitro
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
