@@ -1,4 +1,4 @@
-name: Build rwkv.cpp with cuBLAS
+name: Build rwkv.cpp
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
       - name: Prepare commit hash
         id: commit_hash
         run: |
-          git clone https://github.com/saharNooby/rwkv.cpp.git cache --depth 1
+          git clone https://github.com/RWKV/rwkv.cpp cache --depth 1
           cd cache
           echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           cd ..
@@ -25,38 +25,120 @@ jobs:
         uses: prompt/actions-commit-hash@v3
         with:
           commit: ${{ steps.commit_hash.outputs.hash }}
-  build_cu121:
+  build_cu121_avx2_linux:
     needs: get_short_commit_hash
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Install CUDA 12.1
         id: install-cuda
-        uses: Jimver/cuda-toolkit@v0.2.11
+        uses: Jimver/cuda-toolkit@v0.2.13
         with:
-          cuda: "12.1.0"
+          cuda: "12.1.1"
+          method: network
+      - name: Install Deps
+        run: sudo apt-get install ccache ninja-build zip -y
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: saharNooby/rwkv.cpp
+          repository: RWKV/rwkv.cpp
           submodules: recursive
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake .. -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DRWKV_CUBLAS=ON -DRWKV_STANDALONE=ON
+          cmake --build . --config Release -j $(nproc)
+      - name: Pack
+        run: |
+          mkdir -p build/dist
+          cd build/bin/Release
+          zip ../../dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cuda121-x64.zip rwkv.so
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cu121-avx2-linux
+          path: build/dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cuda121-x64.zip
+  build_cu121_avx512_win:
+    needs: get_short_commit_hash
+    runs-on: windows-latest
+    steps:
+      - name: Setup VS Dev Environment
+        uses: seanmiddleditch/gha-setup-vsdevenv@v4
+      - name: Install CUDA 12.1
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.13
+        with:
+          cuda: "12.1.1"
+          method: network
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "thrust", "visual_studio_integration"]'
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          windows_compile_environment: msvc
+      - name: Install Ninja
+        uses: urkle/action-get-ninja@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: RWKV/rwkv.cpp
+          submodules: recursive
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DRWKV_CUBLAS=ON -DRWKV_AVX512=ON -DRWKV_STANDALONE=ON
           cmake --build . --config Release
       - name: Pack
         run: |
           cd build\bin\Release\
-          7z a ..\..\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.7z .
+          7z a ..\..\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cuda121-x64.zip rwkv.dll
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: cu121
-          path: build/dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.7z
+          name: cu121-avx512-win
+          path: build/dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cuda121-x64.zip
+  build_cu113_avx2_win:
+    needs: get_short_commit_hash
+    runs-on: windows-2019
+    steps:
+      - name: Setup VS Dev Environment
+        uses: seanmiddleditch/gha-setup-vsdevenv@v4
+      - name: Install CUDA 11.3
+        id: install-cuda
+        uses: Jimver/cuda-toolkit@v0.2.13
+        with:
+          cuda: "11.3.1"
+          method: network
+          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "thrust", "visual_studio_integration"]'
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          windows_compile_environment: msvc
+      - name: Install Ninja
+        uses: urkle/action-get-ninja@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: RWKV/rwkv.cpp
+          submodules: recursive
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DRWKV_CUBLAS=ON -DCMAKE_CUDA_ARCHITECTURES="35" -DRWKV_STANDALONE=ON
+          cmake --build . --config Release
+      - name: Pack
+        run: |
+          cd build\bin\Release\
+          7z a ..\..\dist\rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cuda113-x64.zip rwkv.dll
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cu113-avx2-win
+          path: build/dist/rwkv-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cuda113-x64.zip
   release:
     runs-on: ubuntu-latest
-    needs: [get_short_commit_hash, build_cu121]
+    needs: [get_short_commit_hash, build_cu121_avx2_linux, build_cu121_avx512_win, build_cu113_avx2_win]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -66,16 +148,16 @@ jobs:
       - name: Prepare Release
         run: |
           cd dist
-          mv -f cu121/* .
-          rm -rf cu121
+          mv -f cu121-avx2-linux/* .
+          mv -f cu121-avx512-win/* .
+          mv -f cu113-avx2-win/* .
+          rm -rf cu121-avx2-linux cu121-avx512-win cu113-avx2-win 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: rwkv_cpp-${{ needs.get_short_commit_hash.outputs.hash }}
           name: Binary build for rwkv.cpp (${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
-            This release contains the x86_64 binary (Windows version) of [rwkv.cpp](https://github.com/saherNooby/rwkv.cpp).
-
-            Please note that I only build for AVX2 & cuBLAS & CUDA v11.3 **or** AVX512 & cuBLAS & CUDA v12.1, using VS2022 BuildTools.
+            This release contains the x86_64 binary of [rwkv.cpp](https://github.com/saherNooby/rwkv.cpp).
           files: dist/*
           fail_on_unmatched_files: true
