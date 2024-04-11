@@ -28,9 +28,11 @@ jobs:
           submodules: recursive
       - name: Write Supabase Database Credentials
         run: |
-          echo "SUPABASE_DB: ${{ env.SUPABASE_DB }}" >> .env.prod
-          echo "SUPABASE_DB_USER: ${{ env.SUPABASE_DB_USER }}" >> .env.prod
-          echo "SUPABASE_DB_PORT: ${{ env.SUPABASE_DB_PORT }}" >> .env.prod
-          echo "SUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}" >> .env.prod
+          cat > .env.prod << EOF
+          SUPABASE_DB: ${{ env.SUPABASE_DB }}
+          SUPABASE_DB_USER: ${{ env.SUPABASE_DB_USER }}
+          SUPABASE_DB_PORT: ${{ env.SUPABASE_DB_PORT }}
+          SUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
+          EOF
       - name: Setup Database
         run: cargo run migration ${{ inputs.mode }} ".env.prod"
