@@ -26,7 +26,6 @@ jobs:
         with:
           repository: AppFlowy-IO/AppFlowy-Supabase
           submodules: recursive
-          ref: v${{ inputs.version }}
       - name: Write Supabase Database Credentials
         run: |
           echo "SUPABASE_DB: ${{ env.SUPABASE_DB }}" >> .env.prod
