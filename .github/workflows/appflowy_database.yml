@@ -34,5 +34,5 @@ jobs:
       - name: Setup Database
         run: |
           cargo run migration --help
-          cargo run migration ${{ inputs.mode }}
+          cargo run migration ${{ inputs.mode }} --help
           cargo run migration ${{ inputs.mode }} $GITHUB_WORKSPACE/.env
