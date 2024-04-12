@@ -3,6 +3,9 @@ name: Build AppFlowy Supabase Database Tool
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   get_short_commit_hash:
     runs-on: ubuntu-latest
