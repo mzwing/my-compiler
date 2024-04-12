@@ -30,9 +30,13 @@ jobs:
       - name: Write Supabase Database Credentials
         run: |
           echo -e "SUPABASE_DB: ${{ env.SUPABASE_DB }}\nSUPABASE_DB_USER: ${{ env.SUPABASE_DB_USER }}\nSUPABASE_DB_PORT: ${{ env.SUPABASE_DB_PORT }}\nSUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}" > .env
+          echo -e "SUPABASE_DB: ${{ env.SUPABASE_DB }}\nSUPABASE_DB_USER: ${{ env.SUPABASE_DB_USER }}\nSUPABASE_DB_PORT: ${{ env.SUPABASE_DB_PORT }}\nSUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}" > .env.dev
+          echo -e "SUPABASE_DB: ${{ env.SUPABASE_DB }}\nSUPABASE_DB_USER: ${{ env.SUPABASE_DB_USER }}\nSUPABASE_DB_PORT: ${{ env.SUPABASE_DB_PORT }}" > .env.prod
+          cat .env.prod
+          echo -e "SUPABASE_DB: ${{ env.SUPABASE_DB }}\nSUPABASE_DB_USER: ${{ env.SUPABASE_DB_USER }}\nSUPABASE_DB_PORT: ${{ env.SUPABASE_DB_PORT }}\nSUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}" > .env.prod
           ls -alh
       - name: Setup Database
         run: |
           cargo run migration --help
           cargo run migration ${{ inputs.mode }} --help
-          cargo run migration ${{ inputs.mode }} $GITHUB_WORKSPACE/.env
+          cargo run migration ${{ inputs.mode }} $GITHUB_WORKSPACE/.env.prod
