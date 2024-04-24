@@ -1,0 +1,70 @@
+name: Build ollama
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build_intel_mkl_avx2_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Deps
+        run: |
+          wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+          sudo apt-get install ccache intel-basekit intel-oneapi-mkl intel-oneapi-mkl-devel ninja-build zip -y
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ollama/ollama
+          submodules: recursive
+          ref: ${{ inputs.version }}
+      - name: Setup Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Build
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          OLLAMA_CUSTOM_CPU_DEFS="-G Ninja -DCMAKE_BUILD_TYPE=Release -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64lp -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON" go generate ./...
+          go build .
+      - name: Pack
+        run: |
+          mkdir -p build/dist
+          zip build/dist/ollama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.zip ollama
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: intel-mkl-avx2-linux
+          path: build/dist/ollama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.zip
+  release:
+    runs-on: ubuntu-latest
+    needs: [build_intel_mkl_avx2_linux]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: |
+            dist/
+      - name: Prepare Release
+        run: |
+          cd dist
+          mv -f intel-mkl-avx2-linux/* .
+          rm -rf intel-mkl-avx2-linux
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ollama-${{ inputs.version }}
+          name: Binary build for ollama (${{ inputs.version }})
+          body: |
+            This release contains the x86_64 binary of [ollama](https://github.com/ollama/ollama).
+          files: dist/*
+          fail_on_unmatched_files: true
