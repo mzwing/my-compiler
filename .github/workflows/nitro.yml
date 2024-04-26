@@ -40,6 +40,7 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build
+          ls -alh
           zip dist/nitro-${{ inputs.version }}-linux-amd64-intel-mkl-avx2.zip nitro
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
