@@ -29,6 +29,26 @@ jobs:
         with:
           version: latest
       - name: Install Dependencies
-        run: pnpm i
+        run: |
+          sudo apt-get install -y zip
+          pnpm i
       - name: Build
-        run: pnpm run build
+        run: pnpm run build && ls -alh
+      - name: Pack
+        run: |
+          cd build
+          zip ../open-webui-${{ inputs.version }}-frontend.zip .
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-webui-frontend
+          path: ./open-webui-${{ inputs.version }}-frontend.zip
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: open-webui-frontend-${{ inputs.version }}
+          name: Binary build for open-webui frontent (${{ inputs.version }})
+          body: |
+            This release contains the x86_64 binary of the frontend of [open-webui](https://github.com/open-webui/open-webui).
+          files: ./open-webui-${{ inputs.version }}-frontend.zip
+          fail_on_unmatched_files: true
