@@ -21,6 +21,9 @@ jobs:
           repository: open-webui/open-webui
           submodules: recursive
           ref: ${{ inputs.version }}
+      - uses: pnpm/action-setup@v3
+        with:
+          version: latest
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
