@@ -43,7 +43,7 @@ jobs:
           name: open-webui-frontend
           path: ./open-webui-${{ inputs.version }}-frontend.zip
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: open-webui-frontend-${{ inputs.version }}
           name: Binary build for open-webui frontend (${{ inputs.version }})
