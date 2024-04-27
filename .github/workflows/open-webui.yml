@@ -30,12 +30,13 @@ jobs:
           version: latest
       - name: Install Dependencies
         run: |
+          node -v
           sudo apt-get install -y zip
           pnpm i
       - name: Build
         run: pnpm run build
       - name: Pack
-        run: zip open-webui-${{ inputs.version }}-frontend.zip build/* build/**/*
+        run: zip -r open-webui-${{ inputs.version }}-frontend.zip build
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
