@@ -71,7 +71,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: ggerganov/llama.cpp
+          repository: Achazwl/llama.cpp
           submodules: recursive
           ref: feat-minicpmv
       - name: Build
@@ -106,7 +106,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: ggerganov/llama.cpp
+          repository: Achazwl/llama.cpp
           submodules: recursive
           ref: feat-minicpmv
       - name: Build
@@ -147,7 +147,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: ggerganov/llama.cpp
+          repository: Achazwl/llama.cpp
           submodules: recursive
           ref: feat-minicpmv
       - name: Build
@@ -187,7 +187,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: ggerganov/llama.cpp
+          repository: Achazwl/llama.cpp
           submodules: recursive
           ref: feat-minicpmv
       - name: Build
@@ -229,6 +229,6 @@ jobs:
           tag_name: llama_cpp-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}
           name: Binary build for llama.cpp (minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
-            This release contains the x86_64 binary of [llama.cpp](https://github.com/ggerganov/llama.cpp).
+            This release contains the x86_64 binary (MiniCPM-V version) of [llama.cpp](https://github.com/Achazwl/llama.cpp/tree/feat-minicpmv).
           files: dist/*
           fail_on_unmatched_files: true
