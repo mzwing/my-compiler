@@ -40,7 +40,7 @@ jobs:
           path: |
             build/libolm-release-v${{ inputs.version }}.zip
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: libolm-v${{ inputs.version }}
           name: libolm dll build (v${{ inputs.version }})

@@ -60,7 +60,7 @@ jobs:
           mv -f intel-mkl-avx2-linux/* .
           rm -rf intel-mkl-avx2-linux
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ollama-${{ inputs.version }}
           name: Binary build for ollama (${{ inputs.version }})

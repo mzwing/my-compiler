@@ -218,7 +218,7 @@ jobs:
           mv -f clblast-avx2-win/* .
           rm -rf openblas-avx2-linux cu121-avx2-linux cu121-avx512-win cu113-avx2-win clblast-avx2-win
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: sd-master-${{ needs.get_short_commit_hash.outputs.hash }}
           name: Binary build for stable-diffusion.cpp (${{ needs.get_short_commit_hash.outputs.hash }})

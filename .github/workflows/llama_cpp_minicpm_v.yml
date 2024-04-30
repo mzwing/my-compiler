@@ -1,18 +1,32 @@
-name: Build llama.cpp
+name: Build llama.cpp (MiniCPM-V)
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Release version"
-        required: true
-        type: string
 
 permissions:
   contents: write
 
 jobs:
+  get_short_commit_hash:
+    runs-on: ubuntu-latest
+    outputs:
+      hash: ${{ steps.short_commit_hash.outputs.short }}
+    steps:
+      - name: Prepare commit hash
+        id: commit_hash
+        run: |
+          git clone https://github.comAchazwl/llama.cpp cache -b feat-minicpmv --depth 1
+          cd cache
+          echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          cd ..
+          rm -rf cache
+      - name: Get short commit hash
+        id: short_commit_hash
+        uses: prompt/actions-commit-hash@v3
+        with:
+          commit: ${{ steps.commit_hash.outputs.hash }}
   build_intel_mkl_avx2_linux:
+    needs: get_short_commit_hash
     runs-on: ubuntu-20.04
     steps:
       - name: Install Deps
@@ -24,9 +38,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: ggerganov/llama.cpp
+          repository: Achazwl/llama.cpp
           submodules: recursive
-          ref: ${{ inputs.version }}
+          ref: feat-minicpmv
       - name: Build
         run: |
           mkdir build
@@ -38,13 +52,14 @@ jobs:
         run: |
           mkdir -p build/dist 
           cd build/bin/
-          zip ../dist/llama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.zip ./*
+          zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: intel-mkl-avx2-linux
-          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx2-intel-mkl-x64.zip
+          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip
   build_sycl_avx2_linux:
+    needs: get_short_commit_hash
     runs-on: ubuntu-latest
     steps:
       - name: Install Deps
@@ -58,7 +73,7 @@ jobs:
         with:
           repository: ggerganov/llama.cpp
           submodules: recursive
-          ref: ${{ inputs.version }}
+          ref: feat-minicpmv
       - name: Build
         run: |
           mkdir build
@@ -70,13 +85,14 @@ jobs:
         run: |
           mkdir -p build/dist 
           cd build/bin/
-          zip ../dist/llama-${{ inputs.version }}-bin-linux-avx2-sycl-x64.zip ./*
+          zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: sycl-avx2-linux
-          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx2-sycl-x64.zip
+          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip
   build_cu121_avx2_linux:
+    needs: get_short_commit_hash
     runs-on: ubuntu-latest
     steps:
       - name: Install CUDA 12.1
@@ -92,7 +108,7 @@ jobs:
         with:
           repository: ggerganov/llama.cpp
           submodules: recursive
-          ref: ${{ inputs.version }}
+          ref: feat-minicpmv
       - name: Build
         run: |
           mkdir build
@@ -103,13 +119,14 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
+          zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121-avx2-linux
-          path: build/dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.zip
+          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
   build_cu121_avx512_win:
+    needs: get_short_commit_hash
     runs-on: windows-latest
     steps:
       - name: Setup VS Dev Environment
@@ -132,7 +149,7 @@ jobs:
         with:
           repository: ggerganov/llama.cpp
           submodules: recursive
-          ref: ${{ inputs.version }}
+          ref: feat-minicpmv
       - name: Build
         run: |
           mkdir build
@@ -142,13 +159,14 @@ jobs:
       - name: Pack
         run: |
           cd build\bin\
-          7z a ..\dist\llama-${{ inputs.version }}-bin-win-avx512-cublas-cu121-x64.zip ./*
+          7z a ..\dist\llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121-avx512-win
-          path: build/dist/llama-${{ inputs.version }}-bin-win-avx512-cublas-cu121-x64.zip
+          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip
   build_cu113_avx2_win:
+    needs: get_short_commit_hash
     runs-on: windows-2019
     steps:
       - name: Setup VS Dev Environment
@@ -171,7 +189,7 @@ jobs:
         with:
           repository: ggerganov/llama.cpp
           submodules: recursive
-          ref: ${{ inputs.version }}
+          ref: feat-minicpmv
       - name: Build
         run: |
           mkdir build
@@ -181,15 +199,15 @@ jobs:
       - name: Pack
         run: |
           cd build\bin\
-          7z a ..\dist\llama-${{ inputs.version }}-bin-win-avx2-cublas-cu113-x64.zip ./*
+          7z a ..\dist\llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu113-avx2-win
-          path: build/dist/llama-${{ inputs.version }}-bin-win-avx2-cublas-cu113-x64.zip
+          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip
   release:
     runs-on: ubuntu-latest
-    needs: [build_intel_mkl_avx2_linux, build_sycl_avx2_linux, build_cu121_avx2_linux, build_cu121_avx512_win, build_cu113_avx2_win]
+    needs: [get_short_commit_hash, build_intel_mkl_avx2_linux, build_sycl_avx2_linux, build_cu121_avx2_linux, build_cu121_avx512_win, build_cu113_avx2_win]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -208,8 +226,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: llama_cpp-${{ inputs.version }}
-          name: Binary build for llama.cpp (${{ inputs.version }})
+          tag_name: llama_cpp-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}
+          name: Binary build for llama.cpp (minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
             This release contains the x86_64 binary of [llama.cpp](https://github.com/ggerganov/llama.cpp).
           files: dist/*

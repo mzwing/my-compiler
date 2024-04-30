@@ -125,7 +125,7 @@ jobs:
           mv -f zst/* .
           rm -rf tar_gz deb zst
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: nchat-v${{ env.NCHAT_VERSION }}
           name: nchat Binary (v${{ env.NCHAT_VERSION }})

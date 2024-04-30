@@ -23,7 +23,7 @@ jobs:
           name: serenity-git-win-artifact
           path: ${{ steps.path.outputs.artifactPath }}
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: serenity-git-win
           name: Serenity Windows Binary

@@ -56,7 +56,7 @@ jobs:
           name: win-artifact
           path: build/fluffychat-win-${{ inputs.version }}.zip
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: fluffychat-${{ inputs.version }}
           name: Fluffychat Windows Binary (${{ inputs.version }})

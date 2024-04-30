@@ -129,7 +129,7 @@ jobs:
         run: |
           cd artifacts/
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: vaultwarden-bin
           name: vaultwarden Binary
