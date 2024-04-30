@@ -15,7 +15,7 @@ jobs:
       - name: Prepare commit hash
         id: commit_hash
         run: |
-          git clone https://github.comAchazwl/llama.cpp cache -b feat-minicpmv --depth 1
+          git clone https://github.com/Achazwl/llama.cpp cache -b feat-minicpmv --depth 1
           cd cache
           echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           cd ..
