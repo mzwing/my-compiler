@@ -43,7 +43,6 @@ jobs:
           maintainer: Xhole
           version: ${{ inputs.version }}
           arch: amd64
-          depends: "glibc"
           desc: "A file list/WebDAV program that supports multiple storages, powered by Gin and Solidjs."
       - name: Prepare Upload Artifacts
         run: |
