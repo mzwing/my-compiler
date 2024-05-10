@@ -93,7 +93,7 @@ jobs:
           maintainer: dani-garcia
           version: ${{ env.VAULTWARDEN_VERSION }}
           arch: amd64
-          depends: "ncurses, file, sqlite3, openssl, glibc, zlib, libxcb1, lib64gcc-s1, libpng16-16"
+          depends: "glibc"
           desc: "Unofficial Bitwarden compatible server written in Rust, formerly known as bitwarden_rs"
   pack_deb_arm64:
     runs-on: ubuntu-latest
