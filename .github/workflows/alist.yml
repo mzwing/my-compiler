@@ -1,4 +1,4 @@
-name: Extract vaultwarden Binary & Pack
+name: Pack AList Deb
 
 on:
   workflow_dispatch:
