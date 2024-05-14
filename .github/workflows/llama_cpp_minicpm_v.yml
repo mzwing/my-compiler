@@ -46,7 +46,7 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64lp -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64lp -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release -j $(nproc)
       - name: Pack
         run: |
@@ -79,7 +79,7 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_SYCL=ON -DLLAMA_SYCL_F16=ON -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_SHARED_LIBS=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_SYCL=ON -DLLAMA_SYCL_F16=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release -j $(nproc)
       - name: Pack
         run: |
@@ -113,7 +113,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_CUBLAS=ON -DLLAMA_CUDA_F16=true -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLAMA_CUBLAS=ON -DLLAMA_CUDA_F16=true -DLLAMA_AVX2=ON
           cmake --build . --config Release -j $(nproc)
       - name: Pack
         run: |
@@ -154,7 +154,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DLLAMA_CUDA=ON -DLLAMA_CUDA_F16=true -DLLAMA_AVX512=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_SHARED_LIBS=ON -DLLAMA_CUDA=ON -DLLAMA_CUDA_F16=true -DLLAMA_AVX512=ON
           cmake --build . --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: Pack
         run: |
@@ -194,7 +194,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DLLAMA_CUDA=ON -DLLAMA_CUDA_KQUANTS_ITER=1 -DCMAKE_CUDA_ARCHITECTURES="35" -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_SHARED_LIBS=ON -DLLAMA_CUDA=ON -DLLAMA_CUDA_KQUANTS_ITER=1 -DCMAKE_CUDA_ARCHITECTURES="35" -DLLAMA_AVX2=ON
           cmake --build . --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: Pack
         run: |
