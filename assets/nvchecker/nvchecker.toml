@@ -9,10 +9,6 @@ gitlab = "matrix-org/olm"
 host = "gitlab.matrix.org"
 use_max_tag = true
 
-[llama_cpp_for_codeshell]
-source = "github"
-github = "WisdomShell/llama_cpp_for_codeshell"
-
 [llama_cpp_gg_add-phixtral]
 source = "github"
 github = "ggerganov/llama.cpp"

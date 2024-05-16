@@ -9,9 +9,17 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Install deps
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install ca-certificates -y
     - name: Install nvchecker
       run: pip install nvchecker
     - name: Check update
       run: |
         nvchecker -c assets/nvchecker/nvchecker.toml
         ls -alh
+        which nvtake
+        nvtake --help
+        which nvcmp
+        nvcmp --help
