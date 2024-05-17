@@ -9,12 +9,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Fix CA issue
-      run: |
-        sudo mkdir -p /etc/pki/tls/certs/
-        sudo ln -s /etc/ssl/certs/ca-bundle.crt /etc/pki/tls/certs/ca-bundle.crt
     - name: Install nvchecker
-      run: pipx install nvchecker
+      run: |
+        pip install httpx nvchecker
+        pip uninstall pycurl -y
     - name: Check update
       run: |
         nvchecker -c assets/nvchecker/nvchecker.toml

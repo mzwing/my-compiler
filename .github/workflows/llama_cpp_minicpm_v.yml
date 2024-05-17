@@ -84,10 +84,8 @@ jobs:
       - name: Pack
         run: |
           mkdir -p build/dist
-          # cd build/bin/
-          # zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip ./*
-          zip ../llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip -r ./*
-          mv ../llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip build/dist/
+          cd build/bin/
+          zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip ./* ../*.so ../build/examples/**/*.so
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
