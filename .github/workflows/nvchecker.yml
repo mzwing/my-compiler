@@ -10,7 +10,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Fix CA issue
-      run: ln -s /etc/ssl/certs/ca-bundle.crt /etc/pki/tls/certs/ca-bundle.crt
+      run: |
+        sudo mkdir -p /etc/pki/tls/certs/
+        sudo ln -s /etc/ssl/certs/ca-bundle.crt /etc/pki/tls/certs/ca-bundle.crt
     - name: Install nvchecker
       run: pipx install nvchecker
     - name: Check update
