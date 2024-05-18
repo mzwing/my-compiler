@@ -52,12 +52,12 @@ jobs:
         run: |
           mkdir -p build/dist 
           cd build/bin/
-          zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip ./*
+          zip ../dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: intel-mkl-avx2-linux
-          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip
+          path: build/dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip
   build_sycl_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
@@ -85,12 +85,12 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip ./* ../*.so ../build/examples/**/*.so
+          zip ../dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip ./* ../*.so ../build/examples/**/*.so
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: sycl-avx2-linux
-          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip
+          path: build/dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip
   build_cu121_avx2_linux:
     needs: get_short_commit_hash
     runs-on: ubuntu-latest
@@ -119,12 +119,12 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
+          zip ../dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121-avx2-linux
-          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
+          path: build/dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
   build_cu121_avx512_win:
     needs: get_short_commit_hash
     runs-on: windows-latest
@@ -159,12 +159,12 @@ jobs:
       - name: Pack
         run: |
           cd build\bin\
-          7z a ..\dist\llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip ./*
+          7z a ..\dist\llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu121-avx512-win
-          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip
+          path: build/dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip
   build_cu113_avx2_win:
     needs: get_short_commit_hash
     runs-on: windows-2019
@@ -199,12 +199,12 @@ jobs:
       - name: Pack
         run: |
           cd build\bin\
-          7z a ..\dist\llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip ./*
+          7z a ..\dist\llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: cu113-avx2-win
-          path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip
+          path: build/dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip
   release:
     runs-on: ubuntu-latest
     needs: [get_short_commit_hash, build_intel_mkl_avx2_linux, build_sycl_avx2_linux, build_cu121_avx2_linux, build_cu121_avx512_win, build_cu113_avx2_win]
