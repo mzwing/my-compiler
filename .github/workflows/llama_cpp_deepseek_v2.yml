@@ -119,7 +119,7 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
+          zip ../dist/llama-deepseek-v2-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./* ../*.so ../build/examples/**/*.so
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:

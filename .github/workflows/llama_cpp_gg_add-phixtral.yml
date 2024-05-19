@@ -46,7 +46,7 @@ jobs:
           mkdir build
           cd build
           source /opt/intel/oneapi/setvars.sh
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=Intel10_64_dyn -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DLLAMA_NATIVE=ON -DLLAMA_AVX2=ON
           cmake --build . --config Release -j $(nproc)
       - name: Pack
         run: |
@@ -86,7 +86,7 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
+          zip ../dist/llama-phixtral-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./* ../*.so ../build/examples/**/*.so
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
