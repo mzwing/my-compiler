@@ -2,6 +2,12 @@ name: Version Check
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - "assets/nvchecker/config.toml"
+      - ".github/workflows/nvchecker.yml"
 
 jobs:
   check-versions:
@@ -17,7 +23,4 @@ jobs:
       run: |
         nvchecker -c assets/nvchecker/nvchecker.toml
         ls -alh
-        which nvtake
-        nvtake --help
-        which nvcmp
-        nvcmp --help
+        ls -alh assets/nvchecker/
