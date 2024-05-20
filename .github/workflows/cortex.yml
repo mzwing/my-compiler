@@ -1,4 +1,4 @@
-name: Build nitro
+name: Build cortex
 
 on:
   workflow_dispatch:

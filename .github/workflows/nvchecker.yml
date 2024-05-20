@@ -25,14 +25,14 @@ jobs:
       run: |
         nvchecker -c assets/nvchecker/config.toml
         nvtake -c assets/nvchecker/config.toml --all
-        ls -alh assets/nvchecker/
+        mv assets/nvchecker/*.json .
     - name: Commit version record files
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: "chore: update version record files changes"
         branch: nvchecker
         commit_options: "--no-verify --signoff"
-        file_pattern: assets/nvchecker/*.json
+        file_pattern: ./*.json
         repository: .
         commit_user_name: GitHub Actions Bot
         commit_user_email: actions@github.com
