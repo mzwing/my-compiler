@@ -21,6 +21,6 @@ jobs:
         pip uninstall pycurl -y
     - name: Check update
       run: |
-        nvchecker -c assets/nvchecker/nvchecker.toml
+        nvchecker -c assets/nvchecker/config.toml
         ls -alh
         ls -alh assets/nvchecker/
