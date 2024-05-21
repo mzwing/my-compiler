@@ -34,6 +34,7 @@ jobs:
       run: |
         nvchecker -c assets/nvchecker/config.toml
         nvcmp -c assets/nvchecker/config.toml > result.tmp
+        ls -alh
         echo "debug start"
         cat result.tmp
         echo "debug end"
