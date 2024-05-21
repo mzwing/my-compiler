@@ -33,11 +33,7 @@ jobs:
     - name: Check update
       run: |
         nvchecker -c assets/nvchecker/config.toml
-        nvcmp -c assets/nvchecker/config.toml > result.tmp
-        ls -alh
-        echo "debug start"
-        cat result.tmp
-        echo "debug end"
+        nvcmp --file assets/nvchecker/config.toml
         nvtake -c assets/nvchecker/config.toml --all
     - name: Commit version record files
       run: |
