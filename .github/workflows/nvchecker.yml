@@ -17,6 +17,15 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: nvchecker
+        path: cache
+    - name: Prepare
+      run: |
+        mv cache/*.json assets/nvchecker/
+        rm -rf cache
     - name: Install nvchecker
       run: |
         pip install httpx[http2] nvchecker
@@ -24,16 +33,21 @@ jobs:
     - name: Check update
       run: |
         nvchecker -c assets/nvchecker/config.toml
+        nvcmp -c assets/nvchecker/config.toml > result.tmp
+        echo "debug start"
+        cat result.tmp
+        echo "debug end"
         nvtake -c assets/nvchecker/config.toml --all
-        mv assets/nvchecker/*.json .
     - name: Commit version record files
-      uses: stefanzweifel/git-auto-commit-action@v5
-      with:
-        commit_message: "chore: update version record files changes"
-        branch: nvchecker
-        commit_options: "--no-verify --signoff"
-        file_pattern: ./*.json
-        repository: .
-        commit_user_name: GitHub Actions Bot
-        commit_user_email: actions@github.com
-        commit_author: GitHub Actions Bot <actions@github.com>
+      run: |
+        mkdir -p cache
+        mv assets/nvchecker/*.json cache/
+        cd cache
+        git init
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions Bot"
+        git remote add origin https://github-action:${{ secrets.GITHUB_TOKEN }}@github.com/MZWNET/actions.git
+        git branch -M nvchecker
+        git add .
+        git commit -m "chore: update version record files changes"
+        git push -f origin nvchecker
