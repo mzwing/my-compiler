@@ -33,11 +33,7 @@ jobs:
     - name: Check update
       run: |
         nvchecker -c assets/nvchecker/config.toml
-        mv assets/nvchecker/old_ver.json assets/nvchecker/old_ver.json.bak
-        touch assets/nvchecker/old_ver.json
-        nvcmp --file assets/nvchecker/config.toml
-        rm -rf assets/nvchecker/old_ver.json
-        mv assets/nvchecker/old_ver.json.bak assets/nvchecker/old_ver.json
+        nvcmp --file assets/nvchecker/config.toml > result.cmp
         nvtake -c assets/nvchecker/config.toml --all
     - name: Commit version record files
       run: |

@@ -70,7 +70,9 @@ jobs:
         run: |
           mkdir -p build/dist 
           cd build/bin/
-          zip ../dist/llama-${{ inputs.version }}-bin-linux-avx2-sycl-x64.zip ./* ./* ../*.so ../build/examples/**/*.so
+          mv ../*.so ./
+          mv ../build/examples/**/*.so ./
+          zip ../dist/llama-${{ inputs.version }}-bin-linux-avx2-sycl-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -103,7 +105,9 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/
-          zip ../dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.zip ./* ./* ../*.so ../build/examples/**/*.so
+          mv ../*.so ./
+          mv ../build/examples/**/*.so ./
+          zip ../dist/llama-${{ inputs.version }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
