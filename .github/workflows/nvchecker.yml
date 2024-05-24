@@ -33,18 +33,17 @@ jobs:
     - name: Check update
       run: |
         nvchecker -c assets/nvchecker/config.toml
-        nvcmp --file assets/nvchecker/config.toml > result.cmp
+        nvcmp --file assets/nvchecker/config.toml > assets/nvchecker/result.cmp
         nvtake -c assets/nvchecker/config.toml --all
     - name: Commit version record files
       run: |
-        mkdir -p cache
-        mv assets/nvchecker/*.json cache/
-        cd cache
+        cd assets/nvchecker
         git init
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions Bot"
         git remote add origin https://github-action:${{ secrets.GITHUB_TOKEN }}@github.com/MZWNET/actions.git
         git branch -M nvchecker
-        git add .
+        git add ./*.json
         git commit -m "chore: update version record files changes"
         git push -f origin nvchecker
+        rm -rf .git
