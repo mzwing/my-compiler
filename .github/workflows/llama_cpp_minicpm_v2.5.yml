@@ -1,4 +1,4 @@
-name: Build llama.cpp (MiniCPM-V)
+name: Build llama.cpp (MiniCPM-V2.5)
 
 on:
   workflow_dispatch:
