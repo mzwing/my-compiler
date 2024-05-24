@@ -231,8 +231,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: llama_cpp-minicpm-v2.5-${{ needs.get_short_commit_hash.outputs.hash }}
-          name: Binary build for llama.cpp (minicpm-v2.5-${{ needs.get_short_commit_hash.outputs.hash }})
+          name: Binary build for llama.cpp (MiniCPM-V2.5-${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
-            This release contains the x86_64 binary (minicpm-v2.5 version) of [llama.cpp](https://github.com/OpenBMB/llama.cpp/tree/minicpm-v2.5).
+            This release contains the x86_64 binary (MiniCPM-V2.5 version) of [llama.cpp](https://github.com/OpenBMB/llama.cpp/tree/minicpm-v2.5).
           files: dist/*
           fail_on_unmatched_files: true
