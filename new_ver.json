@@ -1,0 +1,85 @@
+{
+  "version": 2,
+  "data": {
+    "FullTCore": {
+      "version": "20240229.070809",
+      "revision": "7868c0d8f8668198a360737d6c820d1d545ba1cf",
+      "url": "https://github.com/AirportR/FullTCore/commit/7868c0d8f8668198a360737d6c820d1d545ba1cf"
+    },
+    "alist": {
+      "version": "v3.35.0",
+      "gitref": "refs/tags/v3.35.0",
+      "url": "https://github.com/alist-org/alist/releases/tag/v3.35.0"
+    },
+    "appflowy-supabase": {
+      "version": "20240110.215045",
+      "revision": "009f232f894c14ecf7d046c4888e99f6bdfbda7a",
+      "url": "https://github.com/AppFlowy-IO/AppFlowy-Supabase/commit/009f232f894c14ecf7d046c4888e99f6bdfbda7a"
+    },
+    "cortex": {
+      "version": "v0.4.9",
+      "gitref": "refs/tags/v0.4.9",
+      "url": "https://github.com/janhq/cortex/releases/tag/v0.4.9"
+    },
+    "fluffychat": {
+      "version": "v1.20.0",
+      "gitref": "refs/tags/v1.20.0",
+      "url": "https://github.com/krille-chan/fluffychat/releases/tag/v1.20.0"
+    },
+    "libolm": {
+      "version": "3.2.16",
+      "revision": "7e0c8277032e40308987257b711b38af8d77cc69",
+      "url": "https://gitlab.matrix.org/matrix-org/olm/-/tags/3.2.16"
+    },
+    "llama_cpp": {
+      "version": "b2985",
+      "gitref": "refs/tags/b2985",
+      "url": "https://github.com/ggerganov/llama.cpp/releases/tag/b2985"
+    },
+    "llama_cpp_deepseek_v2": {
+      "version": "20240521.155337",
+      "revision": "c033958d7c0055f89f0dcf738054342935c09652",
+      "url": "https://github.com/fairydreaming/llama.cpp/commit/c033958d7c0055f89f0dcf738054342935c09652"
+    },
+    "llama_cpp_gg_add-phixtral": {
+      "version": "20240113.122407",
+      "revision": "9998ecd1912294be66c37b31805872274cb9f700",
+      "url": "https://github.com/ggerganov/llama.cpp/commit/9998ecd1912294be66c37b31805872274cb9f700"
+    },
+    "llama_cpp_minicpm_v": {
+      "version": "20240523.103437",
+      "revision": "70a23863dcff7458839960b304ea166a401d4d8e",
+      "url": "https://github.com/Achazwl/llama.cpp/commit/70a23863dcff7458839960b304ea166a401d4d8e"
+    },
+    "nchat": {
+      "version": "v4.50",
+      "gitref": "refs/tags/v4.50",
+      "url": "https://github.com/d99kris/nchat/releases/tag/v4.50"
+    },
+    "open-webui": {
+      "version": "v0.1.125",
+      "gitref": "refs/tags/v0.1.125",
+      "url": "https://github.com/open-webui/open-webui/releases/tag/v0.1.125"
+    },
+    "rwkv_cpp": {
+      "version": "20240302.064232",
+      "revision": "d8f13ffe231712c11427b180cce2fed76757b38d",
+      "url": "https://github.com/RWKV/rwkv.cpp/commit/d8f13ffe231712c11427b180cce2fed76757b38d"
+    },
+    "serenity": {
+      "version": "20240519.151043",
+      "revision": "3014a638d9675359c42c98af6c685686d39b363d",
+      "url": "https://github.com/SagerNet/serenity/commit/3014a638d9675359c42c98af6c685686d39b363d"
+    },
+    "stable-diffusion_cpp": {
+      "version": "20240514.150652",
+      "revision": "1d2af5ca3fc30dec9657a6cca8f87c20dfd83f1c",
+      "url": "https://github.com/leejet/stable-diffusion.cpp/commit/1d2af5ca3fc30dec9657a6cca8f87c20dfd83f1c"
+    },
+    "vaultwarden": {
+      "version": "1.30.5",
+      "gitref": "refs/tags/1.30.5",
+      "url": "https://github.com/dani-garcia/vaultwarden/releases/tag/1.30.5"
+    }
+  }
+}
