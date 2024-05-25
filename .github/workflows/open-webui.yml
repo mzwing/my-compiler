@@ -1,4 +1,4 @@
-name: Build Open WebUI frontend
+name: Build Open WebUI
 
 on:
   workflow_dispatch:
