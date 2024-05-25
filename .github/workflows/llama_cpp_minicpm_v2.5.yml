@@ -15,7 +15,7 @@ jobs:
       - name: Prepare commit hash
         id: commit_hash
         run: |
-          git clone https://github.com/OpenBMB/llama.cpp cache -b minicpm-v2.5 --depth 1
+          git clone https://github.com/OpenBMB/llama.cpp cache -b minicpm-v2.5_for_ollama --depth 1
           cd cache
           echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           cd ..
@@ -40,7 +40,7 @@ jobs:
         with:
           repository: OpenBMB/llama.cpp
           submodules: recursive
-          ref: minicpm-v2.5
+          ref: minicpm-v2.5_for_ollama
       - name: Build
         run: |
           mkdir build
@@ -73,7 +73,7 @@ jobs:
         with:
           repository: OpenBMB/llama.cpp
           submodules: recursive
-          ref: minicpm-v2.5
+          ref: minicpm-v2.5_for_ollama
       - name: Build
         run: |
           mkdir build
@@ -110,7 +110,7 @@ jobs:
         with:
           repository: OpenBMB/llama.cpp
           submodules: recursive
-          ref: minicpm-v2.5
+          ref: minicpm-v2.5_for_ollama
       - name: Build
         run: |
           mkdir build
@@ -153,7 +153,7 @@ jobs:
         with:
           repository: OpenBMB/llama.cpp
           submodules: recursive
-          ref: minicpm-v2.5
+          ref: minicpm-v2.5_for_ollama
       - name: Build
         run: |
           mkdir build
@@ -193,7 +193,7 @@ jobs:
         with:
           repository: OpenBMB/llama.cpp
           submodules: recursive
-          ref: minicpm-v2.5
+          ref: minicpm-v2.5_for_ollama
       - name: Build
         run: |
           mkdir build
@@ -233,6 +233,6 @@ jobs:
           tag_name: llama_cpp-minicpm-v2.5-${{ needs.get_short_commit_hash.outputs.hash }}
           name: Binary build for llama.cpp (MiniCPM-V2.5-${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
-            This release contains the x86_64 binary (MiniCPM-V2.5 version) of [llama.cpp](https://github.com/OpenBMB/llama.cpp/tree/minicpm-v2.5).
+            This release contains the x86_64 binary (MiniCPM-V2.5 version) of [llama.cpp](https://github.com/OpenBMB/llama.cpp/tree/minicpm-v2.5_for_ollama).
           files: dist/*
           fail_on_unmatched_files: true
