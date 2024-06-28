@@ -29,7 +29,7 @@ jobs:
           go-version: stable
       - name: Build
         run: |
-          go build -o build/CloudflareWarpSpeedTest -ldflags '-X main.Version=${{ inputs.version }} -linkmode '\''external'\'' -extldflags '\''-static'\'''
+          GOOS=linux GOARCH=i686 go build -o build/CloudflareWarpSpeedTest -ldflags '-X main.Version=${{ inputs.version }} -linkmode '\''external'\'' -extldflags '\''-static'\'''
           cd build
           mkdir -p dist
           zip ./dist/CloudflareWarpSpeedTest-${{ inputs.version }}-linux-i686.zip ./CloudflareWarpSpeedTest
