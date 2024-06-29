@@ -33,6 +33,7 @@ jobs:
       - name: Build
         run: |
           go clean -modcache
+          rm -rf /home/runner/go/pkg/mod/gvisor.dev/gvisor@v0.0.0-20221203005347-703fd9b7fbc0/pkg/gohacks
           CGO_ENABLED=1 GOOS=linux GOARCH=386 CC="zig cc -target i386-linux" CXX="zig c++ -target i386-linux" go build -o build/CloudflareWarpSpeedTest -ldflags '-X main.Version=${{ inputs.version }} -linkmode '\''external'\'' -extldflags '\''-static'\'''
           cd build
           mkdir -p dist
