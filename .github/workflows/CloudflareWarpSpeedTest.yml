@@ -33,7 +33,7 @@ jobs:
         run : go clean -modcache
       - name: Build
         run: |
-          go get
+          go get -u -v gvisor.dev/gvisor
           CGO_ENABLED=1 GOOS=linux GOARCH=386 CC="zig cc -target i386-linux" CXX="zig c++ -target i386-linux" go build -o build/CloudflareWarpSpeedTest -ldflags '-X main.Version=${{ inputs.version }}' -v
           cd build
           mkdir -p dist
