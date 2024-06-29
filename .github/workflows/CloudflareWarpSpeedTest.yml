@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: stable
+          cache: true
       - name: Setup Zig
         uses: goto-bus-stop/setup-zig@v2
       - name: Build
