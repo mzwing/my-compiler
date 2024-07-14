@@ -21,33 +21,13 @@ jobs:
           repository: peanut996/CloudflareWarpSpeedTest
           submodules: recursive
           ref: ${{ inputs.version }}
-      - name: Install Deps
-        run: sudo apt-get install zip -y
-      - name: Setup Go Environment
-        uses: actions/setup-go@v4
+      - name: Build & Release
+        uses: wangyoucao577/go-release-action@v1
         with:
-          go-version: stable
-      - name: Setup Zig
-        uses: goto-bus-stop/setup-zig@v2
-      - name: Fix some Golang bugs
-        run : go clean -modcache
-      - name: Build
-        run: |
-          go get -u -v gvisor.dev/gvisor
-          CGO_ENABLED=1 GOOS=linux GOARCH=386 CC="zig cc -target i386-linux" CXX="zig c++ -target i386-linux" go build -o build/CloudflareWarpSpeedTest -ldflags '-X main.Version=${{ inputs.version }}' -v
-          cd build
-          mkdir -p dist
-          zip ./dist/CloudflareWarpSpeedTest-${{ inputs.version }}-linux-i686.zip ./CloudflareWarpSpeedTest
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: CloudflareWarpSpeedTest-linux-i696-artifact
-          path: build/dist/CloudflareWarpSpeedTest-${{ inputs.version }}-linux-i686.zip
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: CloudflareWarpSpeedTest-${{ inputs.version }}
-          name: Binary build for CloudflareWarpSpeedTest (${{ inputs.version }})
-          body: This release contains the Linux i686 binary of [CloudflareWarpSpeedTest](https://github.com/peanut996/CloudflareWarpSpeedTest).
-          files: build/dist/CloudflareWarpSpeedTest-${{ inputs.version }}-linux-i686.zip
-          fail_on_unmatched_files: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: linux
+          goarch: 386
+          project_path: .
+          binary_name: CloudflareWarpSpeedTest
+          release_tag: "CloudflareWarpSpeedTest-${{ inputs.version }}"
+          ldflags: -X main.Version=${{ inputs.version }}
