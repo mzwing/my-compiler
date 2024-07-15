@@ -64,7 +64,7 @@ jobs:
     steps:
       - name: Install CUDA 12.1
         id: install-cuda
-        uses: Jimver/cuda-toolkit@v0.2.13
+        uses: Jimver/cuda-toolkit@v0.2.16
         with:
           cuda: "12.1.1"
       - name: Install Deps
