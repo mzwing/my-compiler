@@ -99,7 +99,7 @@ jobs:
     needs: [get_short_commit_hash, build_intel_mkl_avx2_linux, build_cu121_avx2_linux]
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: |
             dist/
