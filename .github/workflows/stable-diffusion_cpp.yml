@@ -50,7 +50,7 @@ jobs:
           cd build/bin/
           zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-openblas-avx2-x64.zip ./*
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: openblas-avx2-linux
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-openblas-avx2-x64.zip
@@ -83,7 +83,7 @@ jobs:
           cd build/bin/
           zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cu121-avx2-linux
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
@@ -122,7 +122,7 @@ jobs:
           cd build\bin\
           7z a ..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip .
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cu121-avx512-win
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip
@@ -161,7 +161,7 @@ jobs:
           cd build\bin\
           7z a ..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip .
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cu113-avx2-win
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip
@@ -195,7 +195,7 @@ jobs:
           cp C:/vcpkg/packages/clblast_x64-windows/bin/clblast.dll .
           7z a ..\..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-clblast-x64.zip .
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: clblast-avx2-win
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-clblast-x64.zip

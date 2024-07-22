@@ -54,7 +54,7 @@ jobs:
           cd build/bin/
           zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip ./*
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: intel-mkl-avx2-linux
           path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-intel-mkl-x64.zip
@@ -89,7 +89,7 @@ jobs:
           mv ../build/examples/**/*.so ./
           zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip ./*
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sycl-avx2-linux
           path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-sycl-x64.zip
@@ -125,7 +125,7 @@ jobs:
           mv ../build/examples/**/*.so ./
           zip ../dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cu121-avx2-linux
           path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu121-x64.zip
@@ -165,7 +165,7 @@ jobs:
           cd build\bin\
           7z a ..\dist\llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip ./*
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cu121-avx512-win
           path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu121-x64.zip
@@ -205,7 +205,7 @@ jobs:
           cd build\bin\
           7z a ..\dist\llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip ./*
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cu113-avx2-win
           path: build/dist/llama-minicpm-v-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip
