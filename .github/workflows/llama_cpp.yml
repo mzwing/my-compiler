@@ -39,7 +39,7 @@ jobs:
         run: |
           mkdir -p build/dist
           cd build/bin/ || exit
-          mv ../**.so ./
+          mv ../**/*.so ./
           zip ../dist/llama-${{ inputs.version }}-bin-linux-avx512-cuda-cu12.6.1-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
