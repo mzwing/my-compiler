@@ -35,14 +35,11 @@ jobs:
           cd build || exit
           cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_SHARED_LIBS=ON -DGGML_CUDA=ON -DGGML_CUDA_F16=true -DGGML_AVX512=ON -DGGML_CUDA_FA_ALL_QUANTS=ON
           cmake --build . --config Release -j "$(nproc)"
-          ls -alh
-          ls -alh build
       - name: Pack
         run: |
           mkdir -p build/dist
           cd build/bin/ || exit
-          mv ../*.so ./
-          mv ../examples/**/*.so ./
+          mv ../**.so ./
           zip ../dist/llama-${{ inputs.version }}-bin-linux-avx512-cuda-cu12.6.1-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
