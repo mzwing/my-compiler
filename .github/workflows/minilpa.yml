@@ -45,5 +45,5 @@ jobs:
           tag_name: minilpa-${{ inputs.version }}
           name: Binary(AppImage) Build for MiniLPA (${{ inputs.version }})
           body: This release contains the x86_64 binary (AppImage Format, Linux Wayland Only) of [MiniLPA](https://github.com/EsimMoe/MiniLPA) (${{ inputs.version }}).
-          files: build/dist/
+          files: build/dist/*
           fail_on_unmatched_files: true
