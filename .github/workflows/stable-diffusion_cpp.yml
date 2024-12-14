@@ -149,7 +149,7 @@ jobs:
           mkdir -p build/dist
           find . -name "*.so" -exec mv {} build/bin/ \;
           cd build/bin/ || exit
-          zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu126-x64.zip ./*
+          zip ../dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-linux-avx2-cublas-cu124-x64.zip ./*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
