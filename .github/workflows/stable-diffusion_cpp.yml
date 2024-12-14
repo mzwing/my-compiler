@@ -228,48 +228,9 @@ jobs:
         with:
           name: cu124-avx512-win
           path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx512-cublas-cu124-x64.zip
-  build_cu113_avx2_win:
-    needs: get_short_commit_hash
-    runs-on: windows-2019
-    steps:
-      - name: Setup VS Dev Environment
-        uses: seanmiddleditch/gha-setup-vsdevenv@v4
-      - name: Install CUDA 11.3
-        id: install-cuda
-        uses: MZWNET/cuda-toolkit@mod
-        with:
-          cuda: "11.3.1"
-          method: network
-          sub-packages: '["nvcc", "cudart", "cublas", "cublas_dev", "thrust", "visual_studio_integration"]'
-      - name: Setup ccache
-        uses: Chocobo1/setup-ccache-action@v1
-        with:
-          windows_compile_environment: msvc
-      - name: Install Ninja
-        uses: urkle/action-get-ninja@v1
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: leejet/stable-diffusion.cpp
-          submodules: recursive
-      - name: Build
-        run: |
-          mkdir build
-          cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DSD_CUBLAS=ON -DSD_FAST_SOFTMAX=ON -DGGML_AVX2=ON -DCMAKE_CUDA_ARCHITECTURES=35 -DSD_BUILD_SHARED_LIBS=ON
-          cmake --build . --config Release -j $env:NUMBER_OF_PROCESSORS
-      - name: Pack
-        run: |
-          cd build\bin\
-          7z a ..\dist\sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip .
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: cu113-avx2-win
-          path: build/dist/sd-master-${{ needs.get_short_commit_hash.outputs.hash }}-bin-win-avx2-cublas-cu113-x64.zip
   release:
     runs-on: ubuntu-latest
-    needs: [get_short_commit_hash, build_openblas_avx2_linux, build_sycl_avx512_linux, build_sycl_avx2_linux, build_cu126_avx512_linux, build_cu124_avx2_linux, build_cu124_avx512_win, build_cu113_avx2_win]
+    needs: [get_short_commit_hash, build_openblas_avx2_linux, build_sycl_avx512_linux, build_sycl_avx2_linux, build_cu126_avx512_linux, build_cu124_avx2_linux, build_cu124_avx512_win]
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
