@@ -276,16 +276,6 @@ jobs:
         with:
           path: |
             dist/
-      - name: Prepare Release
-        run: |
-          cd dist
-          mv -f openblas-avx2-linux/* .
-          mv -f sycl-avx2-linux/* .
-          mv -f cu124-avx2-linux/* 
-          mv -f cu126-avx512-linux/* .
-          mv -f cu124-avx512-win/* .
-          mv -f cu113-avx2-win/* .
-          rm -rf openblas-avx2-linux sycl-avx2-linux cu124-avx2-linux cu126-avx512-linux cu124-avx512-win cu113-avx2-win
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
@@ -293,5 +283,5 @@ jobs:
           name: Binary build for stable-diffusion.cpp (${{ needs.get_short_commit_hash.outputs.hash }})
           body: |
             This release contains the x86_64 binary of [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp).
-          files: dist/*
+          files: dist/**/*
           fail_on_unmatched_files: true
