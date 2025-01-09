@@ -2,12 +2,14 @@ name: Extract vaultwarden Binary & Pack
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version"
+        required: true
+        type: string
 
 permissions:
   contents: write
-
-env:
-  VAULTWARDEN_VERSION: 1.30.1
 
 jobs:
   extract:
@@ -22,13 +24,13 @@ jobs:
       - name: Pull & Extract
         run: |
           cd x86_64
-          ../docker-image-extract vaultwarden/server:${{ env.VAULTWARDEN_VERSION }}
+          ../docker-image-extract vaultwarden/server:${{ inputs.version }}
           cd ../armv6
-          ../docker-image-extract -p linux/arm/v6 vaultwarden/server:${{ env.VAULTWARDEN_VERSION }}
+          ../docker-image-extract -p linux/arm/v6 vaultwarden/server:${{ inputs.version }}
           cd ../armv7
-          ../docker-image-extract -p linux/arm/v7 vaultwarden/server:${{ env.VAULTWARDEN_VERSION }}
+          ../docker-image-extract -p linux/arm/v7 vaultwarden/server:${{ inputs.version }}
           cd ../arm64
-          ../docker-image-extract -p linux/arm64 vaultwarden/server:${{ env.VAULTWARDEN_VERSION }}
+          ../docker-image-extract -p linux/arm64 vaultwarden/server:${{ inputs.version }}
       - name: Clean
         run: |
           cp x86_64/output/vaultwarden dist/x86_64
@@ -85,16 +87,21 @@ jobs:
           mkdir -p etc/systemd/system/
           cp ../resources/assets/deb-resources/vaultwarden.service etc/systemd/system/
       - name: Pack deb
-        id: pack_deb
+        id: pack_amd64_deb
         uses: jiro4989/build-deb-action@v3
         with:
           package: vaultwarden
           package_root: cache/
           maintainer: dani-garcia
-          version: ${{ env.VAULTWARDEN_VERSION }}
+          version: ${{ inputs.version }}
           arch: amd64
-          depends: "glibc"
+          depends: "libc6"
           desc: "Unofficial Bitwarden compatible server written in Rust, formerly known as bitwarden_rs"
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-amd64
+          path: ${{ steps.pack_amd64_deb.outputs.file_name }}
   pack_deb_arm64:
     runs-on: ubuntu-latest
     needs: extract
@@ -108,7 +115,7 @@ jobs:
         run: |
           mkdir cache
           cd cache
-          tar -zxvf ../artifacts/vaultwarden-x86_64-binary.tar.gz
+          tar -zxvf ../artifacts/vaultwarden-arm64-binary.tar.gz
           mkdir -p usr/bin
           mv vaultwarden usr/bin/
           mkdir -p var/lib/vaultwarden/
@@ -116,6 +123,23 @@ jobs:
           mkdir -p etc/vaultwarden/
           touch etc/vaultwarden/vaultwarden.env
           mkdir -p etc/systemd/system/
+          cp ../resources/assets/deb-resources/vaultwarden.service etc/systemd/system/
+      - name: Pack deb
+        id: pack_arm64_deb
+        uses: jiro4989/build-deb-action@v3
+        with:
+          package: vaultwarden
+          package_root: cache/
+          maintainer: dani-garcia
+          version: ${{ inputs.version }}
+          arch: arm64
+          depends: "libc6"
+          desc: "Unofficial Bitwarden compatible server written in Rust, formerly known as bitwarden_rs"
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-arm64
+          path: ${{ steps.pack_arm64_deb.outputs.file_name }}
   release:
     runs-on: ubuntu-latest
     needs: [extract, pack_deb_amd64, pack_deb_arm64]
@@ -125,18 +149,11 @@ jobs:
         with:
           path: |
             artifacts/
-      - name: Prepare
-        run: |
-          cd artifacts/
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: vaultwarden-bin
-          name: vaultwarden Binary
-          body: This release contains the officially supported binary of [vaultwarden](https://github.com/dani-garcia/vaultwarden) (v${{ env.VAULTWARDEN_VERSION }}), extracted from official docker image.
-          files: |
-            vaultwarden-x86_64-binary.tar.gz
-            vaultwarden-armv6-binary.tar.gz
-            vaultwarden-armv7-binary.tar.gz
-            vaultwarden-arm64-binary.tar.gz
+          tag_name: vaultwarden-${{ inputs.version }}
+          name: vaultwarden Binary (v${{ inputs.version }})
+          body: This release contains the officially supported binary of [vaultwarden](https://github.com/dani-garcia/vaultwarden) (v${{ inputs.version }}), extracted from official docker image.
+          files: artifacts/*
           fail_on_unmatched_files: true
